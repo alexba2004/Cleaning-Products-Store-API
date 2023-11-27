@@ -4,6 +4,11 @@ Welcome to "Cleaning Products Store API," the repository for the Bulk Cleaning P
 
 This project is dedicated to simplifying and enhancing the shopping experience for our cleaning products store. The API, built using NodeJS, PUG, and Tailwind under an MVC model, is designed to efficiently manage and showcase our diverse range of cleaning products available for purchase in bulk.
 
+## Collaborators
+- Alejandro Briones.
+- Eduardo.
+- Jareni.
+  
 ## Key Features
 
 - **User-Friendly Shopping**: Enjoy a seamless and user-friendly shopping experience for customers looking to buy cleaning products in bulk.
@@ -52,6 +57,18 @@ Make sure to have the following dependencies installed before running the applic
 2. Install dependencies: `npm install`
 3. Configure your environment variables in a `.env` file.
 4. Run the application: `npm start`
+
+## Contributing
+
+If you'd like to contribute to the development of "Cleaning Products Store API," follow these steps:
+
+1. Fork the repository.
+2. Create your feature branch: `git checkout -b feature/NewFeature`
+3. Make your changes and commit: `git commit -m 'Add NewFeature'`
+4. Push to your branch: `git push origin feature/NewFeature`
+5. Open a pull request on GitHub.
+
+Thank you for contributing!
 
 ## Contributing
 
