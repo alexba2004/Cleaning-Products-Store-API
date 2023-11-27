@@ -1,0 +1,205 @@
+extends ../layout/index
+
+block styles
+    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css")
+
+block content
+  body
+    div.container.mx-auto.my-10.text-center
+      h1.text-4xl.font-bold.mb-8 Carrito de compra
+
+      //- Añadir el total de compra
+      p#total-purchase(class="text-lg font-bold mb-4") Total de compra: $
+
+      //- Añadir el botón de pago centrado
+      button#pay-now-btn(class="bg-green-500 text-white p-3 mt-4 rounded mx-auto block" onclick="buyNow()") Pagar
+      
+      //- Ventana emergente
+      div#popup-container(class="hidden fixed inset-0 bg-black bg-opacity-50 h-screen w-screen flex items-center justify-center")
+        div#popup-content(class="bg-white p-8 rounded-lg w-2/3 h-2/3 max-w-screen-xl max-h-screen-xl relative")
+          div(class="mx-auto w-64 h-64 overflow-hidden")
+            img#popup-image(class="w-full h-full object-contain", style="border-radius: 0;")
+          div(class="mt-4 text-center")
+            p#popup-product-name(class="text-lg font-semibold mb-2")
+            p#popup-product-description(class="text-sm text-gray-700")
+            p#popup-product-price(class="text-sm font-bold text-green-500 mt-2")
+
+            //- Agregar el input de cantidad y total
+            div(class="mt-4 flex flex-col items-center")
+              label(for="quantity" class="text-sm font-semibold mb-2") Cantidad:
+              input#quantity(type="number" min="1" value="1" class="w-16 text-center border rounded focus:outline-none focus:ring focus:border-blue-300" onchange="updateTotal()")
+              p#popup-total(class="text-sm font-bold text-blue-500 mt-2")
+
+            div.flex.justify-between.mt-4
+              button#add-to-cart-btn(class="bg-blue-500 text-white p-2 m-2 rounded" onclick="saveAndClosePopup()") Guardar
+              button#buy-now-btn-popup(class="bg-red-500 text-white p-2 m-2 rounded" onclick="closePopup()") Cancelar
+
+      //- Lista de productos apilados verticalmente
+      ul#product-list(class="mb-8")
+        each cartItem in shoppingCartItems
+          li(class="mb-4")
+            div.p-4.text-center
+              //- Contenedor principal con la imagen, nombre, precio, cantidad, subtotal y botones
+              div.product-container(class="flex justify-between items-center h-full p-4 border border-gray-300 rounded" id=`${cartItem.Product ? cartItem.Product.productName : 'Unknown'}-container`)
+                //- Contenedor izquierdo con la imagen y el nombre
+                div.left-container(class="flex items-center")
+                  img(
+                    src=`/img/products/${cartItem.Product ? cartItem.Product.productName.toLowerCase() : 'unknown'}.png`,
+                    alt=cartItem.Product ? cartItem.Product.productName : 'Unknown',
+                    class="h-32 w-32 object-contain rounded-full product-image mb-2 mr-4",
+                  )
+                  div(class="flex flex-col items-start text-left") 
+                    p.text-sm.font-semibold.mt-auto.mb-2.text-center #{cartItem.Product ? cartItem.Product.productName : 'Unknown'}
+                    p.text-sm.font-bold.text-green-500.mb-2 Precio: ${cartItem.Product ? cartItem.Product.price : 'Unknown'}
+                    p.text-sm.font-semibold.mb-2 Cantidad: ${cartItem.quantity || 'Unknown'}
+                    p.text-sm.font-semibold.mb-2 Subtotal: $${(parseFloat(cartItem.Product ? cartItem.Product.price.replace('$', '') : 0) * (cartItem.quantity || 0)).toFixed(2) || 'Unknown'}
+                //- Contenedor derecho con los botones de editar y eliminar
+                div.right-container(class="flex items-center") 
+                  button(class="bg-blue-500 text-white p-2 m-2 rounded" onclick=`openPopup('${cartItem.Product ? cartItem.Product.productName : 'Unknown'}')`) Editar
+                  button(class="bg-red-500 text-white p-2 m-2 rounded" onclick=`deleteProduct('${cartItem.Product ? cartItem.Product.productName : 'Unknown'}')`) Eliminar
+
+      //- Mostrar el script sin intervalos y botones de navegación
+      //- Mostrar el script sin intervalos y botones de navegación
+      script.
+        const shoppingCartItems = !{JSON.stringify(shoppingCartItems)};
+
+        function showShoppingCart() {
+          const productList = document.getElementById('product-list');
+          productList.innerHTML = '';
+
+          shoppingCartItems.forEach(cartItem => {
+            const listItem = document.createElement('li');
+            listItem.className = 'mb-4';
+            listItem.innerHTML = `
+              <div class="p-4 text-center">
+                <div class="product-container mb-2 flex justify-between items-center h-full p-4 border border-gray-300 rounded" id="${cartItem.Product ? cartItem.Product.productName : 'Unknown'}-container">
+                  <div class="left-container flex items-center">
+                    <img src="/img/products/${cartItem.Product ? cartItem.Product.productName.toLowerCase() : 'unknown'}.png" alt="${cartItem.Product ? cartItem.Product.productName : 'Unknown'}" class="h-32 w-32 object-contain rounded-full product-image mb-2 mr-4">
+                    <div class="flex flex-col items-start text-left"> 
+                      <p class="text-sm font-semibold mt-auto mb-2 text-center">${cartItem.Product ? cartItem.Product.productName : 'Unknown'}</p>
+                      <p class="text-sm font-bold text-green-500 mb-2">Precio: ${cartItem.Product ? cartItem.Product.price : 'Unknown'}</p>
+                      <p class="text-sm font-semibold mb-2">Cantidad: ${cartItem.quantity || 'Unknown'}</p>
+                      <p class="text-sm font-semibold mb-2">Subtotal: $${(parseFloat(cartItem.Product ? cartItem.Product.price.replace('$', '') : 0) * (cartItem.quantity || 0)).toFixed(2) || 'Unknown'}</p>
+                    </div>
+                  </div>
+                  <div class="right-container flex items-center"> 
+                    <button class="bg-blue-500 text-white p-2 m-2 rounded" onclick="openPopup('${cartItem.Product ? cartItem.Product.productName : 'Unknown'}')">Editar</button>
+                    <button class="bg-red-500 text-white p-2 m-2 rounded" onclick="deleteProduct('${cartItem.Product ? cartItem.Product.productName : 'Unknown'}')">Eliminar</button>
+                  </div>
+                </div>
+              </div>
+            `;
+
+            productList.appendChild(listItem);
+          });
+        }
+
+        showShoppingCart();
+
+
+        function openPopup(productName) {
+          const product = products.find(p => p.productName === productName);
+          const popupContainer = document.getElementById('popup-container');
+          const popupContent = document.getElementById('popup-content');
+          const popupImage = document.getElementById('popup-image');
+          const popupProductName = document.getElementById('popup-product-name');
+          const popupProductDescription = document.getElementById('popup-product-description');
+          const popupProductPrice = document.getElementById('popup-product-price');
+          const quantityInput = document.getElementById('quantity');
+          const saveButton = document.getElementById('add-to-cart-btn');
+
+          // Establecer la cantidad del popup como la cantidad actual del producto
+          quantityInput.value = product.quantity;
+
+          popupImage.src = `/img/products/${productName.toLowerCase()}.png`;
+          popupImage.alt = productName;
+          popupProductName.textContent = productName;
+          popupProductDescription.textContent = product.productDescription;
+          popupProductPrice.textContent = `Precio: ${product.price}`;
+
+          updateTotal();
+
+          // Cambiar el evento del botón para reflejar la edición
+          saveButton.onclick = function () {
+            saveAndClosePopup(productName);
+          };
+
+          popupContainer.classList.remove('hidden');
+        }
+
+        function closePopup() {
+          const popupContainer = document.getElementById('popup-container');
+          const saveButton = document.getElementById('add-to-cart-btn');
+
+          // Restaurar el evento original del botón
+          saveButton.onclick = saveAndClosePopup;
+
+          popupContainer.classList.add('hidden');
+        }
+
+        function deleteProduct(productName) {
+          // Encontrar el índice del producto en el array
+          const productIndex = products.findIndex(p => p.productName === productName);
+
+          if (productIndex !== -1) {
+            // Eliminar el producto del array
+            products.splice(productIndex, 1);
+
+            // Eliminar el contenedor del producto del DOM
+            const productContainer = document.getElementById(`${productName}-container`);
+            productContainer.remove();
+
+            // Actualizar el total después de eliminar un producto
+            updateTotal();
+          }
+        }
+
+        function saveAndClosePopup(productName) {
+          const popupContainer = document.getElementById('popup-container');
+          const quantityInput = document.getElementById('quantity');
+          const saveButton = document.getElementById('add-to-cart-btn');
+          const productNameElement = document.getElementById('popup-product-name');
+
+          if (productName) {
+            // Si se proporciona el nombre del producto, estamos editando
+            // Encontrar el índice del producto en el array
+            const productIndex = products.findIndex(p => p.productName === productName);
+
+            if (productIndex !== -1) {
+              // Actualizar la cantidad en el array de productos
+              products[productIndex].quantity = parseInt(quantityInput.value) || 0;
+
+              // Volver a mostrar la lista de productos
+              showProducts(currentIndex);
+            }
+          } else {
+            // Si no se proporciona el nombre del producto, estamos agregando al carrito
+            updateTotal();
+            // Agrega aquí la lógica para agregar al carrito, si es necesario
+          }
+
+          // Restaurar el evento original del botón
+          saveButton.onclick = saveAndClosePopup;
+
+          // Actualizar el total
+          updateTotal();
+          // Cerrar el popup
+          closePopup();
+        }
+
+        function updateTotal() {
+          // Calcular la suma de los subtotales de los productos
+          const total = products.reduce((sum, product) => {
+            const productPrice = parseFloat(product.price.replace('$', ''));
+            return sum + productPrice * product.quantity;
+          }, 0);
+
+          // Actualizar el elemento correspondiente con el nuevo total
+          const totalPurchaseParagraph = document.getElementById('total-purchase');
+          totalPurchaseParagraph.textContent = `Total de compra: $${total.toFixed(2)}`;
+        }
+
+        function buyNow() {
+          updateTotal();
+          // Agrega aquí la lógica para realizar la compra, si es necesario
+        }

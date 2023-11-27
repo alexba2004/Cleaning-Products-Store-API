@@ -1,0 +1,20 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title As Limpieza | #{page}
+        link(rel="icon", type="image/x-icon", href="/img/as-limpieza-logo.jpg")
+        link(rel="stylesheet", href="/css/app.css")
+        block styles 
+        script(src="/js/setTime.js") 
+    body.mint-h-screen.bg-customGreen1
+        if showHeader
+            include navbar
+        main(class="mx-auto container mrt-10 px2")
+            block content
+        block scripts
+    footer.mint-h-screen.
+    if showFooter
+        include footer
+    

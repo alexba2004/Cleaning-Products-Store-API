@@ -1,0 +1,200 @@
+extends ../layout/index
+
+block styles
+    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css")
+
+block content
+  body
+    div.container.mx-auto.my-10.text-center
+      h1.text-4xl.font-bold.mb-8 PRODUCTOS
+
+      div#popup-container(class="hidden fixed inset-0 bg-black bg-opacity-50 h-screen w-screen flex items-center justify-center")
+        div#popup-content(class="bg-white p-8 rounded-lg w-2/3 h-2/3 max-w-screen-xl max-h-screen-xl relative")
+          span#close-popup(class="absolute top-1 right-4 cursor-pointer text-2xl font-bold" onclick="closePopup()") ×
+          div(class="mx-auto w-64 h-64 overflow-hidden")
+            img#popup-image(class="w-full h-full object-contain", style="border-radius: 0;")
+          div(class="mt-4")
+            p#popup-product-name(class="text-lg font-semibold")
+            p#popup-product-description(class="text-sm text-gray-700")
+            p#popup-product-price(class="text-sm font-bold text-green-500 mt-2")
+            div(class="mt-4 flex flex-col items-center")
+              label(for="quantity" class="text-sm font-semibold mb-2") Cantidad:
+              input#quantity(type="number" min="1" value="1" class="w-16 text-center border rounded focus:outline-none focus:ring focus:border-blue-300" onchange="updateTotal()")
+              p#popup-total(class="text-sm font-bold text-blue-500 mt-2")
+            div.flex.justify-between.mt-4
+              button#add-to-cart-btn(class="bg-blue-500 text-white p-2 m-2 rounded" onclick="addToShoppingCart()") Añadir al carrito
+              button#buy-now-btn(class="bg-green-500 text-white p-2 m-2 rounded" onclick="buyNow()") Comprar
+
+      div.flex.justify-between.mt-4
+        button#prev-btn(class="bg-blue-500 text-white p-2 m-2 rounded" onclick="prev(); restartInterval();") Anterior
+        button#next-btn(class="bg-blue-500 text-white p-2 m-2 rounded" onclick="next(); restartInterval();") Siguiente
+
+      div.flex.mb-40(id="product-band")
+        each product in products
+          div.w-1/4.p-4.text-center
+            div.product-container(class="mb-2 flex flex-col items-center h-full")
+              img(
+                src=product.productImage,
+                alt=product.productName,
+                class="mx-auto rounded-full product-image",
+                onclick=`openPopup('${product.productName}')`
+              )
+              p.text-sm.font-semibold.mt-auto #{product.productName}
+
+    script.
+      const products = !{JSON.stringify(products)};
+      const userId = 1;
+      let currentProductId;  // Variable global para almacenar el ID del producto
+
+      let currentIndex = 0;
+      let intervalId;
+
+      function showProducts(index) {
+        const band = document.getElementById('product-band');
+        band.innerHTML = '';
+
+        for (let i = 0; i < 4; i++) {
+          const productIndex = (index + i) % products.length;
+          const product = products[productIndex];
+
+          const productDiv = document.createElement('div');
+          productDiv.className = 'w-1/4 p-4 text-center';
+          productDiv.innerHTML = `
+            <div class="product-container mb-2 flex flex-col items-center h-full">
+              <img src="${product.productImage}" alt="${product.productName}" class="mx-auto rounded-full product-image" onclick="openPopup('${product.productName}')">
+              <p class="text-sm font-semibold mt-auto">${product.productName}</p>
+            </div>
+          `;
+          band.appendChild(productDiv);
+        }
+      }
+
+      function openPopup(productName) {
+        const product = products.find(p => p.productName === productName);
+
+        if (!product) {
+          console.error(`Product not found: ${productName}`);
+          return;
+        }
+
+        const popupContainer = document.getElementById('popup-container');
+        const popupImage = document.getElementById('popup-image');
+        const popupProductName = document.getElementById('popup-product-name');
+        const popupProductDescription = document.getElementById('popup-product-description');
+        const popupProductPrice = document.getElementById('popup-product-price');
+        const quantityInput = document.getElementById('quantity');
+
+        if (!popupContainer || !popupImage || !popupProductName || !popupProductDescription || !popupProductPrice || !quantityInput) {
+          console.error('Popup elements not found');
+          return;
+        }
+
+        quantityInput.value = 1;
+
+        popupImage.src = product.productImage;
+        popupImage.alt = productName;
+        popupProductName.textContent = productName;
+        popupProductDescription.textContent = product.productDescription;
+        popupProductPrice.textContent = `Precio: ${product.price}`;
+        updateTotal();
+
+        // Almacena el ID del producto para su uso posterior
+        currentProductId = product.id;
+
+        popupContainer.classList.remove('hidden');
+      }
+
+
+      function closePopup() {
+        const popupContainer = document.getElementById('popup-container');
+        popupContainer.classList.add('hidden');
+      }
+
+      function next() {
+        currentIndex = (currentIndex + 1) % products.length;
+        showProducts(currentIndex);
+      }
+
+      function prev() {
+        currentIndex = (currentIndex - 1 + products.length) % products.length;
+        showProducts(currentIndex);
+      }
+
+      function restartInterval() {
+        clearInterval(intervalId);
+        intervalId = setInterval(next, 5000);
+      }
+
+      showProducts(currentIndex);
+      restartInterval();
+
+      function updateTotal() {
+        const popupProductPrice = document.getElementById('popup-product-price');
+        const quantityInput = document.getElementById('quantity');
+        const totalParagraph = document.getElementById('popup-total');
+
+        if (!popupProductPrice || !quantityInput || !totalParagraph) {
+          console.error('Elements for total calculation not found');
+          return;
+        }
+
+        const productPriceText = popupProductPrice.textContent ? popupProductPrice.textContent.trim() : '';
+        const productPrice = parseFloat(productPriceText.split(':')[1].trim()) || 0;
+        const quantity = parseInt(quantityInput.value) || 0;
+
+        const total = productPrice * quantity;
+
+        totalParagraph.textContent = `Total: $${total.toFixed(2)}`;
+      }
+
+      function addToShoppingCart() {
+          console.log('addToShoppingCart() called');
+          updateTotal();
+
+          const popupProductPrice = document.getElementById('popup-product-price');
+          const quantityInput = document.getElementById('quantity');
+
+          if (!popupProductPrice || !quantityInput) {
+              console.error('Elements not found');
+              return;
+          }
+
+          const productPriceText = popupProductPrice.textContent?.trim() || '';
+          const productPrice = parseFloat(productPriceText.split('$')[1]?.trim()) || 0;
+          const quantity = parseInt(quantityInput.value) || 0;
+
+          const total = productPrice * quantity;
+
+          // Envía los datos al servidor
+          fetch('/addToCart', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                  userId,
+                  productId: currentProductId,  // Utiliza el ID almacenado previamente
+                  quantity,
+                  subtotal: total,
+              }),
+          })
+          .then(response => response.json())
+          .then(data => {
+              console.log('Producto agregado al carrito:', data);
+              if (data.success) {
+                  console.log('Producto agregado al carrito:', data);
+                  // Aquí puedes agregar lógica adicional, como actualizar la interfaz de usuario
+              } else {
+                  console.error('Error al agregar al carrito:', data.error);
+              }
+          })
+          .catch(error => {
+              console.error('Error al agregar al carrito:', error);
+          });
+      }
+
+
+      function buyNow() {
+        updateTotal();
+        // Agrega aquí la lógica para realizar la compra, si es necesario
+      }
