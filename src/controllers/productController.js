@@ -29,15 +29,6 @@ const productSale = async (req, res) => {
     }
 };
 
-const shoppingCart = async (req, res) => {
-    res.render("auth/shopping-cart.pug", {
-        page: "Shopping Cart",
-        showHeader: true,
-        showFooter: true,
-        data: req.body,
-    });
-};
-
 const addShoppingCart = async (req, res) => {
     try {
         const { userId, productId, quantity } = req.body;
@@ -67,7 +58,7 @@ const addShoppingCart = async (req, res) => {
 
         if (cartItem) {
             // Si el producto ya está en el carrito, actualiza la cantidad y recalcula el subtotal
-            cartItem.quantity += quantity;
+            cartItem.quantity = quantity;
             cartItem.subtotal = product.price * cartItem.quantity;
             await cartItem.save();
         } else {
@@ -88,7 +79,7 @@ const addShoppingCart = async (req, res) => {
     }
 };
 
-const prueba = async (req, res) => {
+const shoppingCart = async (req, res) => {
     try {
         // Obtén los datos del carrito de compras desde la base de datos
         const shoppingCartItems = await ShoppingCart.findAll({
@@ -96,7 +87,7 @@ const prueba = async (req, res) => {
         });
 
         // Renderiza la vista y pasa los datos del carrito de compras como variable
-        res.render("auth/prueba.pug", {
+        res.render("auth/shopping-cart.pug", {
             page: "Shopping Cart",
             showHeader: true,
             showFooter: true,
@@ -108,4 +99,22 @@ const prueba = async (req, res) => {
     }
 };
 
-export { productHome, productSale, shoppingCart, addShoppingCart, prueba };
+const deleteProduct = async (req, res) => {
+    const productId = req.params.productId;
+
+    try {
+        // Elimina el producto del carrito en la base de datos
+        await ShoppingCart.destroy({
+            where: {
+                ProductId: productId,
+            },
+        });
+
+        return res.json({ success: true });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, error: "Error al eliminar el producto." });
+    }
+};
+
+export { productHome, productSale, shoppingCart, addShoppingCart, deleteProduct };
