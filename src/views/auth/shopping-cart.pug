@@ -30,7 +30,7 @@ block content
 
           div(class="mt-4 flex flex-col items-center")
             label(for="quantity" class="text-sm font-semibold.mb-2") Cantidad:
-            input#quantity(type="number" min="1" value="1" class="w-16 text-center border rounded focus:outline-none focus:ring focus:border-blue-300" onchange="updateTotal()")
+            input#quantity(type="number" min="1" value="1" class="w-16 text-center border rounded focus:outline-none focus:ring focus:border-blue-300" onchange="updatePopupTotal()")
             p#popup-total(class="text-sm font-bold text-blue-500 mt-2")
 
           div.flex.justify-between.mt-4
@@ -59,7 +59,8 @@ block content
 
   script.
     const shoppingCartItems = !{JSON.stringify(shoppingCartItems)};
-    function showShoppingCart() {
+    
+    async function showShoppingCart() {
       const productList = document.getElementById('product-list');
       productList.innerHTML = '';
 
@@ -88,6 +89,7 @@ block content
 
         productList.appendChild(listItem);
       });
+      return Promise.resolve();
     }
 
     function openPopup(productId) {
@@ -103,6 +105,7 @@ block content
         const quantityInput = document.getElementById('quantity');
         const saveButton = document.getElementById('add-to-cart-btn');
 
+        quantityInput.dataset.originalValue = product.quantity || 1;
         quantityInput.value = product.quantity || 1;
 
         popupImage.src = `${product.Product.productImage.toLowerCase()}`;
@@ -115,28 +118,33 @@ block content
           saveAndClosePopup(productId);
         };
 
+        updatePopupTotal();
         popupContainer.classList.remove('hidden');
       }
     }
 
     function closePopup() {
       const popupContainer = document.getElementById('popup-container');
+      const quantityInput = document.getElementById('quantity');
       const saveButton = document.getElementById('add-to-cart-btn');
       const cancelButton = document.getElementById('buy-now-btn-popup');
 
-      saveButton.onclick = saveAndClosePopup;
+      quantityInput.value = quantityInput.dataset.originalValue;
+      saveButton.onclick = function () {
+        saveAndClosePopup();
+      };
       cancelButton.onclick = closePopup;
 
       popupContainer.classList.add('hidden');
     }
 
-    async function deleteProduct(productName) {
-      const productIndex = products.findIndex(p => p.productName === productName);
+    function deleteProduct(productId) {
+      const productIndex = shoppingCartItems.findIndex(item => item.Product.id === parseInt(productId));
 
       if (productIndex !== -1) {
-        products.splice(productIndex, 1);
+        shoppingCartItems.splice(productIndex, 1);
 
-        const productContainer = document.getElementById(`${productName}-container`);
+        const productContainer = document.getElementById(`${productId}-container`);
         productContainer.remove();
 
         updateTotal();
@@ -202,7 +210,46 @@ block content
       }
 
       saveButton.onclick = saveAndClosePopup;
+      updateTotal();
       closePopup();
+      updateQuantityAndSubtotal(productId, updatedQuantity);
+      showShoppingCart();
+    }
+
+    function updateQuantityAndSubtotal(productId, updatedQuantity) {
+      const quantityElement = document.getElementById(`quantity-${productId}`);
+      const subtotalElement = document.getElementById(`subtotal-${productId}`);
+
+      if (quantityElement) {
+        quantityElement.textContent = `Cantidad: ${updatedQuantity}`;
+      }
+
+      if (subtotalElement) {
+        const productPrice = parseFloat(shoppingCartItems.find(item => item.Product.id === productId).Product.price.replace('$', '')) || 0;
+        const updatedSubtotal = (productPrice * updatedQuantity).toFixed(2) || 'Unknown';
+        subtotalElement.textContent = `Subtotal: $${updatedSubtotal}`;
+      }
+
+      if (quantityElement && subtotalElement) {
+        const cartItem = shoppingCartItems.find(item => item.Product.id === productId);
+
+        if (cartItem && cartItem.Product) {
+          const productPrice = parseFloat(cartItem.Product.price.replace('$', '')) || 0;
+          const updatedSubtotal = (productPrice * updatedQuantity).toFixed(2) || 'Unknown';
+          
+          quantityElement.textContent = `Cantidad: ${updatedQuantity}`;
+          subtotalElement.textContent = `Subtotal: $${updatedSubtotal}`;
+        }
+      }
+    }
+
+    function updatePopupTotal() {
+      const quantityInput = document.getElementById('quantity');
+      const popupTotalParagraph = document.getElementById('popup-total');
+      const productPrice = parseFloat(document.getElementById('popup-product-price').textContent.replace('Precio: $', '')) || 0;
+      const quantity = parseInt(quantityInput.value) || 0;
+      const popupTotal = (productPrice * quantity).toFixed(2) || 'Unknown';
+      popupTotalParagraph.textContent = `Subtotal: $${popupTotal}`;
     }
 
     function updateTotal() {
@@ -219,21 +266,20 @@ block content
 
     function buyNow() {
       updateTotal();
-      // Add logic for completing the purchase if needed
+      // Agrega la lógica para completar la compra si es necesario
     }
 
-    async function deleteProduct(productId) {
-      const response = await fetch(`/deleteProduct/${productId}`, {
+    function deleteProduct(productId) {
+      const response = fetch(`/deleteProduct/${productId}`, {
         method: 'DELETE',
       });
 
-      const result = await response.json();
-      if (result.success) {
+      if (response.ok) {
         const productContainer = document.getElementById(`${productId}-container`);
         if (productContainer) {
           productContainer.remove();
           updateTotal();
-          location.reload();
+          showShoppingCart();
         }
       }
     }
