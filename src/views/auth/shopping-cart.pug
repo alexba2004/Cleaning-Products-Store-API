@@ -217,31 +217,17 @@ block content
     }
 
     function updateQuantityAndSubtotal(productId, updatedQuantity) {
-      const quantityElement = document.getElementById(`quantity-${productId}`);
-      const subtotalElement = document.getElementById(`subtotal-${productId}`);
+          const quantityElement = document.getElementById(`quantity-${productId}`);
+          const subtotalElement = document.getElementById(`subtotal-${productId}`);
 
-      if (quantityElement) {
-        quantityElement.textContent = `Cantidad: ${updatedQuantity}`;
-      }
-
-      if (subtotalElement) {
-        const productPrice = parseFloat(shoppingCartItems.find(item => item.Product.id === productId).Product.price.replace('$', '')) || 0;
-        const updatedSubtotal = (productPrice * updatedQuantity).toFixed(2) || 'Unknown';
-        subtotalElement.textContent = `Subtotal: $${updatedSubtotal}`;
-      }
-
-      if (quantityElement && subtotalElement) {
-        const cartItem = shoppingCartItems.find(item => item.Product.id === productId);
-
-        if (cartItem && cartItem.Product) {
-          const productPrice = parseFloat(cartItem.Product.price.replace('$', '')) || 0;
-          const updatedSubtotal = (productPrice * updatedQuantity).toFixed(2) || 'Unknown';
+          const productPrice = parseFloat(document.getElementById('popup-product-price').textContent.replace('Precio: $', '')) || 0;
+          const updatedSubtotal = (productPrice * updatedQuantity).toFixed(2);
           
           quantityElement.textContent = `Cantidad: ${updatedQuantity}`;
-          subtotalElement.textContent = `Subtotal: $${updatedSubtotal}`;
+          subtotalElement.textContent = `Subtotal: $${updatedSubtotal}`;    
+          
+          const quantity = parseFloat(shoppingCartItems.find(item => item.Product.id === productId).Product.price.replace('$', '')) || 0;
         }
-      }
-    }
 
     function updatePopupTotal() {
       const quantityInput = document.getElementById('quantity');
