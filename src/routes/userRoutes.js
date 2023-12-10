@@ -1,5 +1,5 @@
 import express from "express";
-import { formLogin, formPasswordRecovery, formRegister, userHome, insertUser, confirmAccount, updatePassword, authenticateUser, emailChangePassword, formPasswordUpdate, updateProfile, deleteAccount, renderUserProfile } from "../controllers/userController.js";
+import { formLogin, formPasswordRecovery, formRegister, userHome, insertUser, confirmAccount, updatePassword, authenticateUser, emailChangePassword, formPasswordUpdate, deleteAccount, renderUserProfile, updateUserProfile } from "../controllers/userController.js";
 import { protectRoute } from "../middlewares/protectRoute.js";
 
 const router = express.Router();
@@ -15,12 +15,13 @@ router.get("/login/update-password/:token", formPasswordUpdate); // Comprobar to
 router.post("/login/update-password/:token", updatePassword);
 router.get("/home", userHome); // Vista de del home de los usuarios
 
-// Ruta para manejar la actualización de los datos del usuario
-router.post("/profile", updateProfile);
-
 // Ruta para manejar la eliminación de la cuenta del usuario
 router.get("/delete-account", deleteAccount);
 
+// Ruta para renderizar la página de perfil del usuario
 router.get("/profile", renderUserProfile);
+
+// Ruta para manejar la actualización de datos del usuario (debería ser POST)
+router.post("/profile", updateUserProfile);
 
 export default router;

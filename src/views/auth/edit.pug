@@ -11,7 +11,7 @@ block content
     //- Aquí comienza la sección del perfil del usuario
     .mt-8.mx-auto.max-w-3xl
       .bg-white.py-8.px-4.shadow-x1.rounded-lg
-        form.space-y-5(action="/user/profile" method="POST" noValidate)
+        form.space-y-5(action="/profile" method="POST" noValidate)
           //- Mostrar mensajes de éxito o error
           if successMsg
             div#message.mt-8.mx-auto.max-w-xl
@@ -34,8 +34,7 @@ block content
             a#btn-change-password.text-sm.text-customYellow(href="/user/change-password" class="hover:underline decoration-4")
               | Change Password
 
-            a#btn-save-changes.mx-auto.text-sm.text-customYellow(href="/user/save-changes" class="hover:underline decoration-4")
-              | Save Changes
+            input#btn-save-changes.mx-auto.text-sm.text-customYellow(type="submit" value="Save Changes" class="hover:underline decoration-4")
 
             a#btn-delete-account.text-sm.text-red-800(href="/user/delete" class="hover:underline decoration-4")
               | Delete Account

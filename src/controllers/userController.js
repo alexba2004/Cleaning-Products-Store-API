@@ -311,25 +311,23 @@ const renderUserProfile = async (req, res) => {
     }
 };
 
-// Controlador para manejar la actualización de los datos del usuario
-const updateProfile = async (req, res) => {
+// Controlador para manejar la actualización de datos del usuario
+const updateUserProfile = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
-        const updatedUser = await User.findByPk(req.user.id);
+        // Obtén el ID del usuario desde la sesión o cualquier otra fuente
+        const userId = 1; // Ajusta esto según cómo manejas las sesiones
 
-        if (name) updatedUser.name = name;
-        if (email) updatedUser.email = email;
-        if (password) {
-            const salt = await bcrypt.genSalt(10);
-            updatedUser.password = await bcrypt.hash(password, salt);
-        }
+        // Obtén los datos del formulario
+        const { name, email } = req.body;
 
-        await updatedUser.save();
+        // Actualiza los datos del usuario en la base de datos
+        await User.update({ name, email }, { where: { id: userId } });
 
-        res.redirect("/profile");
+        // Redirige a la página de perfil con un mensaje de éxito
+        res.redirect("/profile?successMsg=Profile updated successfully");
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Error al actualizar los datos del usuario" });
+        console.error("Error al actualizar el perfil del usuario:", error);
+        res.redirect("/profile?errorMsg=Error updating profile");
     }
 };
 
@@ -345,4 +343,4 @@ const deleteAccount = async (req, res) => {
     }
 };
 
-export { formLogin, formRegister, formPasswordRecovery, formPasswordUpdate, insertUser, authenticateUser, confirmAccount, updatePassword, emailChangePassword, userHome, updateProfile, deleteAccount, renderUserProfile };
+export { formLogin, formRegister, formPasswordRecovery, formPasswordUpdate, insertUser, authenticateUser, confirmAccount, updatePassword, emailChangePassword, userHome, deleteAccount, renderUserProfile, updateUserProfile };
