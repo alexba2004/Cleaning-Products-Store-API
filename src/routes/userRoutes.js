@@ -1,5 +1,5 @@
 import express from "express";
-import { formLogin, formPasswordRecovery, formRegister, userHome, insertUser, confirmAccount, updatePassword, authenticateUser, emailChangePassword, formPasswordUpdate } from "../controllers/userController.js";
+import { formLogin, formPasswordRecovery, formRegister, userHome, insertUser, confirmAccount, updatePassword, authenticateUser, emailChangePassword, formPasswordUpdate, updateProfile, deleteAccount, renderUserProfile } from "../controllers/userController.js";
 import { protectRoute } from "../middlewares/protectRoute.js";
 
 const router = express.Router();
@@ -14,5 +14,13 @@ router.post("/login", authenticateUser); // Login funcional
 router.get("/login/update-password/:token", formPasswordUpdate); // Comprobar token
 router.post("/login/update-password/:token", updatePassword);
 router.get("/home", userHome); // Vista de del home de los usuarios
+
+// Ruta para manejar la actualización de los datos del usuario
+router.post("/profile", updateProfile);
+
+// Ruta para manejar la eliminación de la cuenta del usuario
+router.get("/delete-account", deleteAccount);
+
+router.get("/profile", renderUserProfile);
 
 export default router;

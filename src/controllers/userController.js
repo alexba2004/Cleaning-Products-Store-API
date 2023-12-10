@@ -290,4 +290,59 @@ const userHome = async (req, res) => {
     });
 };
 
-export { formLogin, formRegister, formPasswordRecovery, formPasswordUpdate, insertUser, authenticateUser, confirmAccount, updatePassword, emailChangePassword, userHome };
+const renderUserProfile = async (req, res) => {
+    try {
+        // Obtén el ID del usuario desde la sesión o cualquier otra fuente
+        const userId = 1; // Ajusta esto según cómo manejas las sesiones
+
+        // Busca al usuario en la base de datos
+        const user = await User.findByPk(userId);
+
+        // Renderiza la página de perfil con la información del usuario
+        res.render("auth/edit", {
+            page: "Profile",
+            showHeader: true,
+            showFooter: true,
+            user,
+        });
+    } catch (error) {
+        console.error("Error al obtener el perfil del usuario:", error);
+        res.status(500).send("Error interno del servidor");
+    }
+};
+
+// Controlador para manejar la actualización de los datos del usuario
+const updateProfile = async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
+        const updatedUser = await User.findByPk(req.user.id);
+
+        if (name) updatedUser.name = name;
+        if (email) updatedUser.email = email;
+        if (password) {
+            const salt = await bcrypt.genSalt(10);
+            updatedUser.password = await bcrypt.hash(password, salt);
+        }
+
+        await updatedUser.save();
+
+        res.redirect("/profile");
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error al actualizar los datos del usuario" });
+    }
+};
+
+// Controlador para manejar la eliminación de la cuenta del usuario
+const deleteAccount = async (req, res) => {
+    try {
+        await User.destroy({ where: { id: req.user.id } });
+        req.logout(); // Cierra la sesión después de eliminar la cuenta
+        res.redirect("/"); // Redirige a la página principal u otra página después de eliminar la cuenta
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error al eliminar la cuenta del usuario" });
+    }
+};
+
+export { formLogin, formRegister, formPasswordRecovery, formPasswordUpdate, insertUser, authenticateUser, confirmAccount, updatePassword, emailChangePassword, userHome, updateProfile, deleteAccount, renderUserProfile };

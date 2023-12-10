@@ -1,0 +1,41 @@
+extends ../layout/index
+
+block content
+  div.py-10
+    h1.text-center.text-4xl.my-10.font-extrabold.text-customYellow
+      | As
+      span.font-normal.text-black
+        |  Limpieza
+    h2.text-center.text-3xl.font-extrabold.text-white= page
+
+    //- Aquí comienza la sección del perfil del usuario
+    .mt-8.mx-auto.max-w-3xl
+      .bg-white.py-8.px-4.shadow-x1.rounded-lg
+        form.space-y-5(action="/user/profile" method="POST" noValidate)
+          //- Mostrar mensajes de éxito o error
+          if successMsg
+            div#message.mt-8.mx-auto.max-w-xl
+              div.text-center(class="bg-green-500 text-white uppercase font-bold rounded-t px-4 mt-1 max-w-xl")= successMsg
+          else if errorMsg
+            div#message.mt-8.mx-auto.max-w-xl
+              div.text-center(class="bg-red-500 text-white uppercase font-bold rounded-t px-4 mt-1 max-w-xl")= errorMsg
+
+          //- Mostrar datos del usuario
+          div
+            label.block.text-sm.uppercase.text-gray-700.mb-3.font-bold(for="name") Name:
+            input#name(class="inputStyle" placeholder="Full Name" name="name" type="text" value=user && user.name ? user.name : '')
+
+          div
+            label.block.text-sm.uppercase.text-gray-700.mb-3.font-bold(for="email") Email:
+            input#email(class="inputStyle" placeholder="user@domain.com" name="email" type="email" value=user && user.email ? user.email : '')
+
+          //- Botones para cambiar contraseña, guardar y eliminar usuario
+          div.flex.items-center.justify-between.pt-5
+            a#btn-change-password.text-sm.text-customYellow(href="/user/change-password" class="hover:underline decoration-4")
+              | Change Password
+
+            a#btn-save-changes.mx-auto.text-sm.text-customYellow(href="/user/save-changes" class="hover:underline decoration-4")
+              | Save Changes
+
+            a#btn-delete-account.text-sm.text-red-800(href="/user/delete" class="hover:underline decoration-4")
+              | Delete Account
