@@ -1,8 +1,10 @@
 // controllers/paymentController.js
 import mercadopago from "mercadopago";
 import dotenv from "dotenv";
-import UserPurchase from "../models/userPurchase.js";
 import ShoppingCart from "../models/shoppingCart.js";
+import Product from "../models/product.js";
+import UserPurchase from "../models/userPurchase.js";
+import jsonWebToken from "jsonwebtoken";
 
 dotenv.config({
     path: "src/.env",
@@ -10,20 +12,43 @@ dotenv.config({
 
 const MERCADOPAGO_API_KEY = process.env.MERCADOPAGO_API_KEY;
 
+// Método para obtener el userId desde el token
+const getUserIdFromToken = (req) => {
+    const token = req.cookies._token;
+    if (!token) {
+        return null; // O manejar el error de alguna manera
+    }
+
+    try {
+        const decoded = jsonWebToken.verify(token, process.env.JWT_SECRET_HASH_STRING);
+        return decoded.userID;
+    } catch (error) {
+        console.error("Error al decodificar el token:", error);
+        return null; // O manejar el error de alguna manera
+    }
+};
+
 export const createOrder = async (req, res) => {
     mercadopago.configure({
         access_token: MERCADOPAGO_API_KEY,
     });
 
     try {
-        const { products } = req.body;
+        // Obtén el ID del usuario autenticado
+        const userId = getUserIdFromToken(req);
 
-        if (!products || !Array.isArray(products) || products.length === 0) {
-            return res.status(400).json({ message: "Invalid or missing products data" });
+        // Consulta la base de datos para obtener los productos del carrito del usuario
+        const shoppingCartItems = await ShoppingCart.findAll({
+            where: { UserId: userId },
+            include: [{ model: Product }],
+        });
+
+        if (!shoppingCartItems || shoppingCartItems.length === 0) {
+            return res.status(400).json({ message: "No products in the shopping cart" });
         }
 
-        // Construye un identificador único para la compra (puedes ajustar esto según tus necesidades)
-        const purchaseIdentifier = products.map((product) => `${product.id}-${product.quantity}`).join(",");
+        // Construye un identificador único para la compra
+        const purchaseIdentifier = shoppingCartItems.map((item) => `${item.Product.id}-${item.quantity}`).join(",");
 
         // Verifica si ya existe una compra para esta combinación de productos
         const existingPurchase = await UserPurchase.findOne({
@@ -35,11 +60,11 @@ export const createOrder = async (req, res) => {
             return res.status(400).json({ message: "Duplicate purchase request" });
         }
 
-        const items = products.map((product) => ({
-            title: product.title || "Unknown",
-            unit_price: product.unit_price || 0,
-            currency_id: product.currency_id || "MX",
-            quantity: product.quantity || 1,
+        const items = shoppingCartItems.map((item) => ({
+            title: item.Product.productName || "Unknown",
+            unit_price: parseFloat(item.Product.price) || 0,
+            currency_id: "MX", // Puedes ajustar esto según tus necesidades
+            quantity: item.quantity || 1,
         }));
 
         const result = await mercadopago.preferences.create({
@@ -51,22 +76,22 @@ export const createOrder = async (req, res) => {
         });
 
         // Obtén el total de la compra sumando los precios de los productos
-        const totalPayment = products.reduce((total, product) => total + product.unit_price * (product.quantity || 1), 0);
+        const totalPayment = shoppingCartItems.reduce((total, item) => total + parseFloat(item.Product.price) * item.quantity, 0);
 
         // Concatena los nombres de los productos con sus cantidades
-        const productDetails = products.map((product) => `Nombre del producto: ${product.title || "Unknown"} Cantidad: ${product.quantity || 1}`);
+        const productDetails = shoppingCartItems.map((item) => `Nombre del producto: ${item.Product.productName || "Unknown"} Cantidad: ${item.quantity || 1}`);
 
         // Almacena la compra en la base de datos (UserPurchase)
         await UserPurchase.create({
             totalPayment,
-            description: productDetails.join(", "), // Añade la descripción con los nombres y cantidades de los productos
-            purchaseIdentifier, // Añade la descripción con los nombres y cantidades de los productos
-            UserId: 1, // Reemplaza con el valor correcto para el ID del usuario
+            description: productDetails.join(", "),
+            purchaseIdentifier,
+            UserId: userId,
         });
 
         // Elimina productos del carrito en la base de datos (ShoppingCart)
         await ShoppingCart.destroy({
-            where: { UserId: 1 }, // Reemplaza con el valor correcto para el ID del usuario
+            where: { UserId: userId },
         });
 
         console.log(result);
@@ -77,3 +102,5 @@ export const createOrder = async (req, res) => {
         return res.status(500).json({ message: "Something goes wrong" });
     }
 };
+
+export { getUserIdFromToken }; // Agregamos la exportación del método getUserIdFromToken

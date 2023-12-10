@@ -17,7 +17,7 @@ block content
 
     p#total-purchase(class="text-lg font-bold mb-4") Total de compra: $
 
-    button#pay-now-btn(class="bg-green-500 text-white p-3 mt-4 rounded mx-auto block" onclick="buyNow()") Pagar
+    button#pay-now-btn(class="bg-green-500 text-white p-3 mt-4 rounded mx-auto block") Pagar
 
     div#popup-container(class="hidden fixed inset-0 bg-black bg-opacity-50 h-screen w-screen flex items-center justify-center")
       div#popup-content(class="bg-white p-8 rounded-lg w-2/3 h-2/3 max-w-screen-xl max-h-screen-xl relative")
@@ -266,68 +266,26 @@ block content
     }
 
     async function buyNow() {
-      updateTotal();
+        try {
+            const response = await fetch("/create-order", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                // No enviamos datos en el cuerpo
+            });
 
-      // Obtener los detalles de los productos
-      const productDetails = [];
-      const productQuantities = getProductQuantities(); // Obtener el arreglo de cantidades
+            if (!response.ok) {
+                const errorData = await response.json(); // Captura la respuesta del servidor
+                console.error("Error en la respuesta del servidor:", errorData);
+                throw new Error("Error al crear la orden");
+            }
 
-      const productContainers = document.querySelectorAll('.product-container');
-
-      let total = 0;
-
-      productContainers.forEach((container, index) => {
-        const productName = container.querySelector('.text-sm.font-semibold.mt-auto.mb-2.text-center').textContent || 'Unknown';
-        const productPrice = parseFloat(container.querySelector('.text-sm.font-bold.text-green-500.mb-2').textContent.replace('Precio: $', '')) || 0;
-        const productQuantity = productQuantities[index] || 0; // Utilizar la cantidad del arreglo
-
-        productDetails.push({
-          title: productName,
-          unit_price: productPrice,
-          currency_id: 'MX',
-          quantity: productQuantity,
-        });
-
-        total += productPrice * productQuantity;
-      });
-
-      console.log('Total de compra:', total.toFixed(2)); // Mostrar el total en la consola
-
-      // Realizar una solicitud al servidor para crear la orden y obtener la URL de la pasarela de pago
-      try {
-        const response = await fetch("/create-order", {
-          method: "POST",
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            products: productDetails,
-            total: total.toFixed(2), // Agregar el total al cuerpo de la solicitud
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Error al crear la orden");
+            const data = await response.json();
+            // Redirigir al usuario a la URL de la pasarela de pago
+            window.location.href = data.init_point;
+        } catch (error) {
+            console.error("Error al completar la compra:", error);
+            // Agregar manejo de errores si es necesario
         }
-
-        const data = await response.json();
-
-        // Redirigir al usuario a la URL de la pasarela de pago
-        window.location.href = data.init_point;
-      } catch (error) {
-        console.error("Error al completar la compra:", error);
-        // Agregar manejo de errores si es necesario
-      }
-    }
-
-    function getProductQuantities() {
-      const productQuantities = [];
-
-      if (shoppingCartItems && shoppingCartItems.length > 0) {
-        shoppingCartItems.forEach((cartItem) => {
-          productQuantities.push(cartItem.quantity || 0);
-        });
-      }
-
-      return productQuantities;
     }
