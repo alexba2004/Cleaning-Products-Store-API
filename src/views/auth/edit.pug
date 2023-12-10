@@ -43,3 +43,19 @@ block content
             a#btn-delete-account.text-sm.text-red-800(href="/delete" class="hover:underline decoration-4")
               | Delete Account
 
+      if userPurchases.length > 0
+        .mt-8  
+          .bg-white.py-8.px-4.shadow-x1.rounded-lg.overflow-y-auto.max-h-96
+            h2.text-center.text-2xl.my-6.font-semibold.text-customYellow Recent Purchases
+            each purchase in userPurchases
+              .mt-4
+                p.text-gray-700.font-semibold
+                  | Price: $#{purchase.totalPayment}
+                p.text-gray-700
+                | Date: #{purchase.createdAt.toLocaleDateString()}
+                p.text-gray-700
+                  | Description: #{purchase.description || 'N/A'}
+                
+
+
+

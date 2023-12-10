@@ -308,12 +308,16 @@ const renderUserProfile = async (req, res) => {
         // Busca al usuario en la base de datos
         const user = await User.findByPk(userId);
 
-        // Renderiza la página de perfil con la información del usuario
+        // Busca las compras del usuario en la base de datos
+        const userPurchases = await UserPurchase.findAll({ where: { UserId: userId } });
+
+        // Renderiza la página de perfil con la información del usuario y sus compras
         res.render("auth/edit", {
             page: "Profile",
             showHeader: true,
             showFooter: true,
             user,
+            userPurchases, // Pasa las compras del usuario a la vista
         });
     } catch (error) {
         console.error("Error al obtener el perfil del usuario:", error);
