@@ -1,0 +1,47 @@
+extends ../layout/index
+
+block content
+  div.py-10
+    h1.text-center.text-4xl.my-10.font-extrabold.text-customYellow
+      | Admin Dashboard
+
+    div.text-center.mb-4
+      a(href="/logout" class="bg-customGreen3 py-2 px-4 rounded-lg hover:bg-customGreen4 inline-block") Logout 
+
+    //- Tabla para mostrar usuarios con compras
+    table.mx-auto.max-w-3xl.w-full.table-auto.border-collapse.border.border-gray-800
+      thead
+        tr
+          th.px-4.py-2.text-gray-800.bg-gray-200.font-semibold
+            | User
+          th.px-4.py-2.text-gray-800.bg-gray-200.font-semibold
+            | Email
+          th.px-4.py-2.text-gray-800.bg-gray-200.font-semibold
+            | Address
+          th.px-4.py-2.text-gray-800.bg-gray-200.font-semibold
+            | Total Purchases
+          th.px-4.py-2.text-gray-800.bg-gray-200.font-semibold
+            | Purchase Details
+
+      tbody
+        each user in usersWithPurchases
+          if user.UserPurchases.length 
+            tr
+              td.px-4.py-2.border.text-gray-700
+                | #{user.name}
+
+              td.px-4.py-2.border.text-gray-700
+                | #{user.email}
+
+              td.px-4.py-2.border.text-gray-700
+                | #{user.address}
+
+              td.px-4.py-2.border.text-gray-700
+                | #{user.UserPurchases.length}
+
+              td.px-4.py-2.border.text-gray-700
+                //- Lista para mostrar las compras del usuario
+                ul
+                  each purchase in user.UserPurchases
+                    li
+                      | Total Payment: #{purchase.totalPayment}, Description: #{purchase.description || 'N/A'}, Purchase Date: #{purchase.createdAt ? purchase.createdAt.toLocaleDateString() : 'N/A'}
