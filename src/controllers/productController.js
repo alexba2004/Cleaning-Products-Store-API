@@ -175,4 +175,44 @@ async function calculateTotal(req, res) {
     }
 }
 
-export { productHome, productSale, shoppingCart, addShoppingCart, deleteProduct, calculateTotal };
+const getProductQuantity = async (req, res) => {
+    const { productId } = req.params;
+
+    try {
+        // Busca la cantidad del producto en el carrito de compras
+        const cartItem = await ShoppingCart.findOne({
+            where: { ProductId: productId }, // Ajusta según tu modelo
+            attributes: ["quantity"],
+        });
+
+        // Si se encuentra, devuelve la cantidad, de lo contrario, devuelve 0
+        const quantity = cartItem ? cartItem.quantity : 0;
+        res.json({ quantity });
+    } catch (error) {
+        console.error("Error al obtener la cantidad del producto:", error);
+        res.status(500).json({ error: "Error al obtener la cantidad del producto" });
+    }
+};
+
+async function deleteCartItem(req, res) {
+    try {
+        const { productId } = req.params;
+
+        // Elimina el producto del carrito de compra
+        const result = await ShoppingCart.destroy({
+            where: { ProductId: productId },
+        });
+
+        if (result) {
+            // Devuelve una respuesta exitosa
+            res.json({ success: true });
+        } else {
+            res.status(404).json({ success: false, message: "Product not found in the shopping cart." });
+        }
+    } catch (error) {
+        console.error("Error deleting product from shopping cart:", error);
+        res.status(500).json({ success: false, message: "Internal server error." });
+    }
+}
+
+export { productHome, productSale, shoppingCart, addShoppingCart, deleteProduct, calculateTotal, getProductQuantity, deleteCartItem };
