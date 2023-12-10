@@ -294,9 +294,13 @@ const userHome = async (req, res) => {
 
 const renderUserProfile = async (req, res) => {
     try {
-        // Obtén el ID del usuario desde la sesión o cualquier otra fuente
-        const userId = 1; // Ajusta esto según cómo manejas las sesiones
+        const token = req.cookies._token;
+        const decoded = jsonWebToken.verify(token, process.env.JWT_SECRET_HASH_STRING);
+        const loggedUser = await User.findByPk(decoded.userID);
 
+        // Obtén el ID del usuario desde la sesión o cualquier otra fuente
+        const userId = loggedUser.id; // Ajusta esto según cómo manejas las sesiones
+        console.log(userId);
         // Busca al usuario en la base de datos
         const user = await User.findByPk(userId);
 
