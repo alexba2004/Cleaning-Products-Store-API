@@ -1,12 +1,15 @@
 import Product from "../models/product.js";
 import ShoppingCart from "../models/shoppingCart.js";
+import jsonWebToken from "jsonwebtoken";
 
 const productHome = async (req, res) => {
+    const userId = getUserIdFromToken(req);
     res.render("products/product-home.pug", {
         page: "Home",
         showHeader: true,
         showFooter: true,
         data: req.body,
+        userId,
     });
 };
 
@@ -15,6 +18,8 @@ const productSale = async (req, res) => {
         // Obtiene todos los productos de la base de datos
         const products = await Product.findAll({ where: { status: true } });
 
+        const userId = getUserIdFromToken(req);
+
         // Renderiza la vista y pasa los productos como variable
         res.render("products/product-sale.pug", {
             page: "Sale",
@@ -22,6 +27,7 @@ const productSale = async (req, res) => {
             showFooter: true,
             data: req.body,
             products, // Pasa los productos a la vista
+            userId,
         });
     } catch (error) {
         console.error("Error al obtener productos:", error);
@@ -31,7 +37,8 @@ const productSale = async (req, res) => {
 
 const addShoppingCart = async (req, res) => {
     try {
-        const { userId, productId, quantity } = req.body;
+        const userId = getUserIdFromToken(req);
+        const { productId, quantity } = req.body;
 
         // Verifica que userId y productId estén presentes en la solicitud
         if (!userId || !productId || !quantity) {
@@ -81,9 +88,19 @@ const addShoppingCart = async (req, res) => {
 
 const shoppingCart = async (req, res) => {
     try {
-        // Obtén los datos del carrito de compras desde la base de datos
+        // Obtén el ID del usuario desde el token
+        const userId = getUserIdFromToken(req);
+
+        // Obtén los datos del carrito de compras para el usuario desde la base de datos
         const shoppingCartItems = await ShoppingCart.findAll({
-            include: [{ model: Product }],
+            include: [
+                {
+                    model: Product,
+                },
+            ],
+            where: {
+                UserId: userId,
+            },
         });
 
         // Renderiza la vista y pasa los datos del carrito de compras como variable
@@ -114,6 +131,21 @@ const deleteProduct = async (req, res) => {
     } catch (error) {
         console.error(error);
         return res.status(500).json({ success: false, error: "Error al eliminar el producto." });
+    }
+};
+
+const getUserIdFromToken = (req) => {
+    const token = req.cookies._token;
+    if (!token) {
+        return null; // O manejar el error de alguna manera
+    }
+
+    try {
+        const decoded = jsonWebToken.verify(token, process.env.JWT_SECRET_HASH_STRING);
+        return decoded.userID;
+    } catch (error) {
+        console.error("Error al decodificar el token:", error);
+        return null; // O manejar el error de alguna manera
     }
 };
 
