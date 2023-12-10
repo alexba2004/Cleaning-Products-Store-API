@@ -1,4 +1,6 @@
 import User from "../models/user.js";
+import ShoppingCart from "../models/shoppingCart.js";
+import UserPurchase from "../models/userPurchase.js";
 import { check, validationResult } from "express-validator";
 import { generateToken, generateJwt } from "../lib/tokens.js";
 import bcrypt from "bcrypt";
@@ -332,15 +334,26 @@ const updateUserProfile = async (req, res) => {
 };
 
 // Controlador para manejar la eliminación de la cuenta del usuario
-const deleteAccount = async (req, res) => {
+const deleteUser = async (req, res) => {
     try {
-        await User.destroy({ where: { id: req.user.id } });
-        req.logout(); // Cierra la sesión después de eliminar la cuenta
-        res.redirect("/"); // Redirige a la página principal u otra página después de eliminar la cuenta
+        // Obtén el ID del usuario desde la sesión o cualquier otra fuente
+        const userId = 1; // Ajusta esto según cómo manejas las sesiones
+
+        // Elimina el usuario y sus relaciones en cascada
+        await User.destroy({
+            where: { id: userId },
+            include: [
+                { model: ShoppingCart, onDelete: "CASCADE" },
+                { model: UserPurchase, onDelete: "CASCADE" },
+            ],
+        });
+
+        // Redirige a la página de inicio o a donde desees después de eliminar el usuario
+        res.redirect("/login");
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Error al eliminar la cuenta del usuario" });
+        console.error("Error al eliminar el usuario:", error);
+        res.redirect("/profile?errorMsg=Error deleting user");
     }
 };
 
-export { formLogin, formRegister, formPasswordRecovery, formPasswordUpdate, insertUser, authenticateUser, confirmAccount, updatePassword, emailChangePassword, userHome, deleteAccount, renderUserProfile, updateUserProfile };
+export { formLogin, formRegister, formPasswordRecovery, formPasswordUpdate, insertUser, authenticateUser, confirmAccount, updatePassword, emailChangePassword, userHome, renderUserProfile, updateUserProfile, deleteUser };
