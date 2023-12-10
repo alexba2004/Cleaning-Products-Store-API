@@ -73,6 +73,7 @@ const insertUser = async (req, res) => {
             user: {
                 name: req.body.name,
                 email: req.body.email,
+                address: req.body.address,
             },
         });
     } else if (resultValidate.isEmpty()) {
@@ -99,6 +100,7 @@ const insertUser = async (req, res) => {
             user: {
                 name: req.body.name,
                 email: req.body.email,
+                address: req.body.address,
             },
         });
     }

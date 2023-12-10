@@ -3,13 +3,12 @@ import Product from "./product.js";
 import ShoppingCart from "./shoppingCart.js";
 import UserPurchase from "./userPurchase.js";
 
-User.hasOne(ShoppingCart, { foreignKey: "UserId" });
-ShoppingCart.belongsTo(User, { foreignKey: "UserId" });
+User.hasMany(ShoppingCart, { foreignKey: "UserId", onDelete: "CASCADE" });
+User.hasMany(UserPurchase, { foreignKey: "UserId", onDelete: "CASCADE" });
 
-ShoppingCart.belongsTo(Product, { foreignKey: "ProductId" });
-Product.hasMany(ShoppingCart, { foreignKey: "ProductId" });
+ShoppingCart.belongsTo(User, { foreignKey: "UserId", onDelete: "CASCADE" });
+ShoppingCart.belongsTo(Product, { foreignKey: "ProductId", onDelete: "CASCADE" });
 
-UserPurchase.belongsTo(User, { foreignKey: "UserId" });
-User.hasMany(UserPurchase, { foreignKey: "UserId" });
+UserPurchase.belongsTo(User, { foreignKey: "UserId", onDelete: "CASCADE" });
 
 export { User, Product, ShoppingCart, UserPurchase };
