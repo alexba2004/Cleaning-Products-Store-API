@@ -298,9 +298,9 @@ const renderUserProfile = async (req, res) => {
         const decoded = jsonWebToken.verify(token, process.env.JWT_SECRET_HASH_STRING);
         const loggedUser = await User.findByPk(decoded.userID);
 
-        // Obtén el ID del usuario desde la sesión o cualquier otra fuente
-        const userId = loggedUser.id; // Ajusta esto según cómo manejas las sesiones
-        console.log(userId);
+        // Obtén el ID del usuario desde la sesión
+        const userId = loggedUser.id;
+
         // Busca al usuario en la base de datos
         const user = await User.findByPk(userId);
 
@@ -320,8 +320,12 @@ const renderUserProfile = async (req, res) => {
 // Controlador para manejar la actualización de datos del usuario
 const updateUserProfile = async (req, res) => {
     try {
-        // Obtén el ID del usuario desde la sesión o cualquier otra fuente
-        const userId = 1; // Ajusta esto según cómo manejas las sesiones
+        const token = req.cookies._token;
+        const decoded = jsonWebToken.verify(token, process.env.JWT_SECRET_HASH_STRING);
+        const loggedUser = await User.findByPk(decoded.userID);
+
+        // Obtén el ID del usuario desde la sesión
+        const userId = loggedUser.id;
 
         // Obtén los datos del formulario
         const { name, email } = req.body;
@@ -340,8 +344,12 @@ const updateUserProfile = async (req, res) => {
 // Controlador para manejar la eliminación de la cuenta del usuario
 const deleteUser = async (req, res) => {
     try {
-        // Obtén el ID del usuario desde la sesión o cualquier otra fuente
-        const userId = 1; // Ajusta esto según cómo manejas las sesiones
+        const token = req.cookies._token;
+        const decoded = jsonWebToken.verify(token, process.env.JWT_SECRET_HASH_STRING);
+        const loggedUser = await User.findByPk(decoded.userID);
+
+        // Obtén el ID del usuario desde la sesión
+        const userId = loggedUser.id;
 
         // Elimina el usuario y sus relaciones en cascada
         await User.destroy({
