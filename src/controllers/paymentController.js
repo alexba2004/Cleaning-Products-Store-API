@@ -40,13 +40,13 @@ export const createOrder = async (req, res) => {
         // Obtén el total de la compra sumando los precios de los productos
         const totalPayment = products.reduce((total, product) => total + product.unit_price * (product.quantity || 1), 0);
 
-        // Concatena los nombres de los productos separados por comas
-        const productNames = products.map((product) => product.title || "Unknown").join(", ");
+        // Concatena los nombres de los productos con sus cantidades
+        const productDetails = products.map((product) => `Nombre del producto: ${product.title || "Unknown"} Cantidad: ${product.quantity || 1}`);
 
         // Almacena la compra en la base de datos (UserPurchase)
         await UserPurchase.create({
             totalPayment,
-            description: productNames, // Añade la descripción con los nombres de los productos
+            description: productDetails.join(", "), // Añade la descripción con los nombres y cantidades de los productos
             UserId: 1, // Reemplaza con el valor correcto para el ID del usuario
         });
 
