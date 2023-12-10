@@ -1,5 +1,5 @@
 import express from "express";
-import { productHome, productSale, shoppingCart, addShoppingCart, deleteProduct } from "../controllers/productController.js";
+import { productHome, productSale, shoppingCart, addShoppingCart, deleteProduct, calculateTotal } from "../controllers/productController.js";
 const router = express.Router();
 
 router.get("/home", productHome);
@@ -12,5 +12,7 @@ router.post("/addToCart", addShoppingCart);
 router.post("/addToCart/:productId", addShoppingCart);
 
 router.delete("/deleteProduct/:productId", deleteProduct);
+
+router.get("/calculateTotal", calculateTotal);
 
 export default router;

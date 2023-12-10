@@ -149,4 +149,30 @@ const getUserIdFromToken = (req) => {
     }
 };
 
-export { productHome, productSale, shoppingCart, addShoppingCart, deleteProduct };
+async function calculateTotal(req, res) {
+    try {
+        const userId = getUserIdFromToken(req);
+
+        const shoppingCartItems = await ShoppingCart.findAll({
+            attributes: ["subtotal"], // Solo seleccionamos la columna 'subtotal'
+            include: [
+                {
+                    model: Product,
+                    attributes: [], // Excluimos las demás columnas de Product
+                },
+            ],
+            where: { userId: userId },
+        });
+
+        const total = shoppingCartItems.reduce((sum, cartItem) => {
+            return sum + parseFloat(cartItem.subtotal);
+        }, 0);
+
+        res.json({ total });
+    } catch (error) {
+        console.error("Error al calcular el total:", error);
+        res.status(500).json({ error: "Error al calcular el total" });
+    }
+}
+
+export { productHome, productSale, shoppingCart, addShoppingCart, deleteProduct, calculateTotal };
