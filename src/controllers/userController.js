@@ -51,6 +51,7 @@ const insertUser = async (req, res) => {
     // Validaciones
     await check("name").notEmpty().withMessage("YOUR NAME IS REQUIRED").run(req); //* Express checa el nombre que no venga vacio AHORA MISMO
     await check("email").notEmpty().withMessage("YOUR EMAIL IS REQUIRED").isEmail().withMessage("THIS ISN'T EMAIL FORMAT").run(req);
+    await check("address").notEmpty().withMessage("YOUR ADDRESS IS REQUIRED").run(req);
     await check("password").notEmpty().withMessage("YOUR PASSWORD IS REQUIRED").isLength({ min: 8, max: 20 }).withMessage("YOUR PASSWORD MUST HAVE 8 CHARACTERS AT LEAST").run(req);
     await check("confirmPassword").notEmpty().withMessage("YOUR PASSWORD IS REQUIRED").isLength({ min: 8, max: 20 }).withMessage("YOUR PASSWORD MUST HAVE 8 CHARACTERS AT LEAST").equals(req.body.password).withMessage("BOTH PASSWORDS FIELDS MUST BE THE SAME").run(req);
 
@@ -63,7 +64,7 @@ const insertUser = async (req, res) => {
         },
     });
 
-    const { name, email, password } = req.body;
+    const { name, address, email, password } = req.body;
 
     if (userExists) {
         res.render("auth/register.pug", {
@@ -80,6 +81,7 @@ const insertUser = async (req, res) => {
         let newUser = await User.create({
             name,
             email,
+            address,
             password,
             token,
         });
@@ -328,10 +330,10 @@ const updateUserProfile = async (req, res) => {
         const userId = loggedUser.id;
 
         // Obtén los datos del formulario
-        const { name, email } = req.body;
+        const { name, email, address } = req.body;
 
         // Actualiza los datos del usuario en la base de datos
-        await User.update({ name, email }, { where: { id: userId } });
+        await User.update({ name, email, address }, { where: { id: userId } });
 
         // Redirige a la página de perfil con un mensaje de éxito
         res.redirect("/profile?successMsg=Profile updated successfully");
