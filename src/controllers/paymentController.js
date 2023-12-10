@@ -1,4 +1,5 @@
-import mercadopage from "mercadopago";
+// controllers/paymentController.js
+import mercadopago from "mercadopago";
 import dotenv from "dotenv";
 import UserPurchase from "../models/userPurchase.js";
 import ShoppingCart from "../models/shoppingCart.js";
@@ -10,7 +11,7 @@ dotenv.config({
 const MERCADOPAGO_API_KEY = process.env.MERCADOPAGO_API_KEY;
 
 export const createOrder = async (req, res) => {
-    mercadopage.configure({
+    mercadopago.configure({
         access_token: MERCADOPAGO_API_KEY,
     });
 
@@ -28,7 +29,7 @@ export const createOrder = async (req, res) => {
             quantity: product.quantity || 1,
         }));
 
-        const result = await mercadopage.preferences.create({
+        const result = await mercadopago.preferences.create({
             items,
             notification_url: "https://e720-190-237-16-208.sa.ngrok.io/webhook",
             back_urls: {
@@ -39,9 +40,13 @@ export const createOrder = async (req, res) => {
         // Obtén el total de la compra sumando los precios de los productos
         const totalPayment = products.reduce((total, product) => total + product.unit_price * (product.quantity || 1), 0);
 
+        // Concatena los nombres de los productos separados por comas
+        const productNames = products.map((product) => product.title || "Unknown").join(", ");
+
         // Almacena la compra en la base de datos (UserPurchase)
         await UserPurchase.create({
             totalPayment,
+            description: productNames, // Añade la descripción con los nombres de los productos
             UserId: 1, // Reemplaza con el valor correcto para el ID del usuario
         });
 
@@ -53,22 +58,6 @@ export const createOrder = async (req, res) => {
         console.log(result);
 
         res.json(result.body);
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: "Something goes wrong" });
-    }
-};
-
-export const receiveWebhook = async (req, res) => {
-    try {
-        const payment = req.query;
-        console.log(payment);
-        if (payment.type === "payment") {
-            const data = await mercadopage.payment.findById(payment["data.id"]);
-            console.log(data);
-        }
-
-        res.sendStatus(204);
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Something goes wrong" });
