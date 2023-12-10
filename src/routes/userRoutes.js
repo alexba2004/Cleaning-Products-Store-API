@@ -1,5 +1,5 @@
 import express from "express";
-import { formLogin, formPasswordRecovery, formRegister, userHome, insertUser, confirmAccount, updatePassword, authenticateUser, emailChangePassword, formPasswordUpdate, renderUserProfile, updateUserProfile, deleteUser } from "../controllers/userController.js";
+import { formLogin, formPasswordRecovery, formRegister, userHome, insertUser, confirmAccount, updatePassword, authenticateUser, emailChangePassword, formPasswordUpdate, renderUserProfile, updateUserProfile, deleteUser, logoutController } from "../controllers/userController.js";
 import { protectRoute } from "../middlewares/protectRoute.js";
 
 const router = express.Router();
@@ -23,5 +23,7 @@ router.post("/profile", updateUserProfile);
 
 // Ruta para manejar la eliminación del usuario
 router.get("/delete", deleteUser);
+
+router.get("/logout", logoutController);
 
 export default router;

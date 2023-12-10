@@ -368,4 +368,13 @@ const deleteUser = async (req, res) => {
     }
 };
 
-export { formLogin, formRegister, formPasswordRecovery, formPasswordUpdate, insertUser, authenticateUser, confirmAccount, updatePassword, emailChangePassword, userHome, renderUserProfile, updateUserProfile, deleteUser };
+const logoutController = async (req, res) => {
+    try {
+        res.redirect("/login"); // Redirige a la página principal u otra página después del logout
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error during logout" });
+    }
+};
+
+export { formLogin, formRegister, formPasswordRecovery, formPasswordUpdate, insertUser, authenticateUser, confirmAccount, updatePassword, emailChangePassword, userHome, renderUserProfile, updateUserProfile, deleteUser, logoutController };

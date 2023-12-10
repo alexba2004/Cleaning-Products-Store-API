@@ -117,17 +117,4 @@ const deleteProduct = async (req, res) => {
     }
 };
 
-const logoutController = async (req, res) => {
-    try {
-        // Aquí deberías agregar la lógica para eliminar el carrito del usuario
-        const userId = 1; // Reemplaza con el campo correcto del usuario
-        await ShoppingCart.destroy({ where: { UserId: userId } });
-
-        res.redirect("/login"); // Redirige a la página principal u otra página después del logout
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Error during logout" });
-    }
-};
-
-export { productHome, productSale, shoppingCart, addShoppingCart, deleteProduct, logoutController };
+export { productHome, productSale, shoppingCart, addShoppingCart, deleteProduct };
