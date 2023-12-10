@@ -22,6 +22,19 @@ export const createOrder = async (req, res) => {
             return res.status(400).json({ message: "Invalid or missing products data" });
         }
 
+        // Construye un identificador único para la compra (puedes ajustar esto según tus necesidades)
+        const purchaseIdentifier = products.map((product) => `${product.id}-${product.quantity}`).join(",");
+
+        // Verifica si ya existe una compra para esta combinación de productos
+        const existingPurchase = await UserPurchase.findOne({
+            where: { purchaseIdentifier },
+        });
+
+        if (existingPurchase) {
+            console.log("La compra ya existe para esta combinación de productos.");
+            return res.status(400).json({ message: "Duplicate purchase request" });
+        }
+
         const items = products.map((product) => ({
             title: product.title || "Unknown",
             unit_price: product.unit_price || 0,
@@ -47,6 +60,7 @@ export const createOrder = async (req, res) => {
         await UserPurchase.create({
             totalPayment,
             description: productDetails.join(", "), // Añade la descripción con los nombres y cantidades de los productos
+            purchaseIdentifier, // Añade la descripción con los nombres y cantidades de los productos
             UserId: 1, // Reemplaza con el valor correcto para el ID del usuario
         });
 

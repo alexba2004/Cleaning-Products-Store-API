@@ -13,6 +13,11 @@ const UserPurchase = db.define(
             type: DataTypes.STRING, // O el tipo de datos que prefieras para la descripción
             allowNull: true, // Puedes ajustar esto según tus requisitos
         },
+        purchaseIdentifier: {
+            type: DataTypes.STRING, // Puedes ajustar el tipo de datos según tus necesidades
+            allowNull: false,
+            unique: true, // Esto asegura que no haya identificadores duplicados
+        },
     },
     {
         timestamps: true,
