@@ -138,7 +138,7 @@ block content
         }
 
         const productPriceText = popupProductPrice.textContent ? popupProductPrice.textContent.trim() : '';
-        const productPrice = parseFloat(productPriceText.split(':')[1].trim()) || 0;
+        const productPrice = parseFloat(productPriceText.split(': $')[1].trim()) || 0;
         const quantity = parseInt(quantityInput.value) || 0;
 
         const total = productPrice * quantity;
@@ -182,7 +182,7 @@ block content
               console.log('Producto agregado al carrito:', data);
               if (data.success) {
                   console.log('Producto agregado al carrito:', data);
-                  // Aquí puedes agregar lógica adicional, como actualizar la interfaz de usuario
+                  closePopup();
               } else {
                   console.error('Error al agregar al carrito:', data.error);
               }
@@ -190,10 +190,4 @@ block content
           .catch(error => {
               console.error('Error al agregar al carrito:', error);
           });
-      }
-
-
-      function buyNow() {
-        updateTotal();
-        // Agrega aquí la lógica para realizar la compra, si es necesario
       }
