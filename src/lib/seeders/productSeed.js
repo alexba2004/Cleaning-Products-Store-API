@@ -8,25 +8,32 @@ const productsData = [
     productImage: "/img/products/producto1.png",
   },
   {
-    productName: "Producto 2",
-    productDescription: "Descripcion 2",
+    productName: "Cloro",
+    productDescription: "Venta de Cloro líquido especial para limpieza y desinfección.",
     price: 20.99,
     status: true,
     productImage: "/img/products/producto2.png",
   },
   {
-    productName: "Producto 3",
-    productDescription: "Descripcion 3",
+    productName: "Detergente para ropa",
+    productDescription: "Es un producto soluble tanto en agua fría como en caliente.",
     price: 15.99,
     status: true,
     productImage: "/img/products/producto3.png",
   },
   {
-    productName: "Producto 4",
-    productDescription: "Descripcion 4",
+    productName: "Vanguard",
+    productDescription: "Cloro marca especializada Vanguard.",
     price: 12.99,
     status: true,
     productImage: "/img/products/producto4.png",
+  },
+  {
+    productName: "Kiriko",
+    productDescription: "Limpiador de vidrios multiusos.",
+    price: 20.55,
+    status: true,
+    productImage: "/img/products/producto5.png",
   },
 ];
 
