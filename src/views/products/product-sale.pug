@@ -9,25 +9,24 @@ block content
       h1.text-4xl.font-bold.mb-8 PRODUCTOS
 
       div#popup-container(class="hidden fixed inset-0 bg-black bg-opacity-50 h-screen w-screen flex items-center justify-center")
-        div#popup-content(class="bg-white p-8 rounded-lg w-2/3 h-2/3 max-w-screen-xl max-h-screen-xl relative")
+        div#popup-content(class="bg-customBulue14 p-8 rounded-lg w-2/3 h-2/3 max-w-screen-xl max-h-screen-xl relative")
           span#close-popup(class="absolute top-1 right-4 cursor-pointer text-2xl font-bold" onclick="closePopup()") ×
           div(class="mx-auto w-64 h-64 overflow-hidden")
             img#popup-image(class="w-full h-full object-contain", style="border-radius: 0;")
           div(class="mt-4")
             p#popup-product-name(class="text-lg font-semibold")
             p#popup-product-description(class="text-sm text-gray-700")
-            p#popup-product-price(class="text-sm font-bold text-green-500 mt-2")
+            p#popup-product-price(class="text-sm font-bold text-customBlue mt-2")
             div(class="mt-4 flex flex-col items-center")
               label(for="quantity" class="text-sm font-semibold mb-2") Cantidad:
               input#quantity(type="number" min="1" value="1" class="w-16 text-center border rounded focus:outline-none focus:ring focus:border-blue-300" onchange="updateTotal()")
-              p#popup-total(class="text-sm font-bold text-blue-500 mt-2")
-            div.flex.justify-between.mt-4
-              button#add-to-cart-btn(class="bg-blue-500 text-white p-2 m-2 rounded" onclick="addToShoppingCart()") Añadir al carrito
-              button#buy-now-btn(class="bg-green-500 text-white p-2 m-2 rounded" onclick="buyNow()") Comprar
+              p#popup-total(class="text-sm font-bold text-customColor mt-2")
+            div.flex.justify-center
+              button#add-to-cart-btn(class="bg-customBlue12 text-white p-2 m-2 rounded" onclick="addToShoppingCart()") Añadir al carrito
 
       div.flex.justify-between.mt-4
-        button#prev-btn(class="bg-blue-500 text-white p-2 m-2 rounded" onclick="prev(); restartInterval();") Anterior
-        button#next-btn(class="bg-blue-500 text-white p-2 m-2 rounded" onclick="next(); restartInterval();") Siguiente
+        button#prev-btn(class="bg-customBlue12 hover:bg-customBlue13 text-white p-2 m-2 rounded" onclick="prev(); restartInterval();") Anterior
+        button#next-btn(class="bg-customBlue12 hover:bg-customBlue13 text-white p-2 m-2 rounded" onclick="next(); restartInterval();") Siguiente
 
       div.flex.mb-40(id="product-band")
         each product in products
@@ -95,7 +94,7 @@ block content
         popupImage.alt = productName;
         popupProductName.textContent = productName;
         popupProductDescription.textContent = product.productDescription;
-        popupProductPrice.textContent = `Precio: ${product.price}`;
+        popupProductPrice.textContent = `Precio: $${product.price}`;
         updateTotal();
 
         // Almacena el ID del producto para su uso posterior

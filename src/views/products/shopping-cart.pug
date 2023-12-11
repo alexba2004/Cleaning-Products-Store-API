@@ -17,31 +17,31 @@ block content
 
     p#total-purchase(class="text-lg font-bold mb-4") Total de compra: $
 
-    button#pay-now-btn(class="bg-green-500 text-white p-3 mt-4 rounded mx-auto block") Pagar
+    button#pay-now-btn(class="bg-customBlue12 text-white p-3 mt-4 rounded mx-auto block") Pagar
 
     div#popup-container(class="hidden fixed inset-0 bg-black bg-opacity-50 h-screen w-screen flex items-center justify-center")
-      div#popup-content(class="bg-white p-8 rounded-lg w-2/3 h-2/3 max-w-screen-xl max-h-screen-xl relative")
+      div#popup-content(class="bg-customBulue14 p-8 rounded-lg w-2/3 h-2/3 max-w-screen-xl max-h-screen-xl relative")
         div(class="mx-auto w-64 h-64 overflow-hidden")
           img#popup-image(class="w-full h-full object-contain", style="border-radius: 0;")
         div(class="mt-4 text-center")
           p#popup-product-name(class="text-lg font-semibold mb-2")
           p#popup-product-description(class="text-sm text-gray-700")
-          p#popup-product-price(class="text-sm font-bold text-green-500 mt-2")
+          p#popup-product-price(class="text-sm font-bold text-customBlue mt-2")
 
           div(class="mt-4 flex flex-col items-center")
             label(for="quantity" class="text-sm font-semibold.mb-2") Cantidad:
             input#quantity(type="number" min="1" class="w-16 text-center border rounded focus:outline-none focus:ring focus:border-blue-300" onchange="updatePopupTotal()" value=(cartItem && cartItem.quantity ? cartItem.quantity : 1))
-            p#popup-total(class="text-sm font-bold text-blue-500 mt-2")
+            p#popup-total(class="text-sm font-bold text-customColor mt-2")
 
           div.flex.justify-between.mt-4
-            button#add-to-cart-btn(class="bg-blue-500 text-white p-2 m-2 rounded" onclick="saveAndClosePopup()") Guardar
-            button#buy-now-btn-popup(class="bg-red-500 text-white p-2 m-2 rounded" onclick="closePopup()") Cancelar
+            button#add-to-cart-btn(class="bg-customBlue16 text-white p-2 m-2 rounded" onclick="saveAndClosePopup()") Guardar
+            button#buy-now-btn-popup(class="bg-customBlue17 text-white p-2 m-2 rounded" onclick="closePopup()") Cancelar
 
   ul#product-list(class="mb-8")
     each cartItem in shoppingCartItems
       li(class="mb-4")
         div.p-4.text-center
-          div.product-container(class="flex justify-between items-center h-full p-4 border border-gray-300 rounded" id=`${cartItem.Product ? cartItem.Product.productName : 'Unknown'}-container`)
+          div.product-container.bg-customBulue14(class="flex justify-between items-center h-full p-4 rounded" id=`${cartItem.Product ? cartItem.Product.productName : 'Unknown'}-container`)
             div.left-container(class="flex items-center")
               img(
                 src=`${cartItem.Product ? cartItem.Product.productImage.toLowerCase() : 'unknown'}`,
@@ -69,19 +69,19 @@ block content
           listItem.className = 'mb-4';
           listItem.innerHTML = `
             <div class="p-4 text-center">
-              <div class="product-container mb-2 flex justify-between items-center h-full p-4 border border-gray-300 rounded" id="${cartItem.Product ? cartItem.Product.productName : 'Unknown'}-container">
+              <div class="bg-customBlue15 product-container mb-2 flex justify-between items-center h-full p-4 rounded" id="${cartItem.Product ? cartItem.Product.productName : 'Unknown'}-container">
               <div class="left-container flex items-center">
                 <img src="${cartItem.Product ? cartItem.Product.productImage.toLowerCase() : 'unknown'}" alt="${cartItem.Product ? cartItem.Product.productName : 'Unknown'}" class="h-32 w-32 object-contain rounded-full product-image mb-2 mr-4">
                 <div class="flex flex-col items-start text-left"> 
                   <p class="text-sm font-semibold mt-auto mb-2 text-center">${cartItem.Product ? cartItem.Product.productName : 'Unknown'}</p>
-                  <p class="text-sm font-bold text-green-500 mb-2">Precio: $${cartItem.Product ? cartItem.Product.price : 'Unknown'}</p>
+                  <p class="text-sm font-bold text-customColor mb-2">Precio: $${cartItem.Product ? cartItem.Product.price : 'Unknown'}</p>
                   <p id="quantity-${cartItem.Product.id}" class="text-sm font-semibold mb-2">Cantidad: ${cartItem.quantity || 'Unknown'}</p>
                   <p id="subtotal-${cartItem.Product.id}" class="text-sm font-semibold mb-2">Subtotal: $${(parseFloat(cartItem.Product ? cartItem.Product.price.replace('$', '') : 0) * (cartItem.quantity || 0)).toFixed(2) || 'Unknown'}</p>
                 </div>
               </div>
               <div class="right-container flex items-center"> 
-                <button class="bg-blue-500 text-white p-2 m-2 rounded" onclick="openPopup('${cartItem.Product ? cartItem.Product.id : 'Unknown'}')">Editar</button>
-                <button class="bg-red-500 text-white p-2 m-2 rounded" onclick="deleteProduct('${cartItem.Product ? cartItem.Product.id : 'Unknown'}')">Eliminar</button>
+                <button class="bg-customBlue16 text-white p-2 m-2 rounded" onclick="openPopup('${cartItem.Product ? cartItem.Product.id : 'Unknown'}')">Editar</button>
+                <button class="bg-customBlue17 text-white p-2 m-2 rounded" onclick="deleteProduct('${cartItem.Product ? cartItem.Product.id : 'Unknown'}')">Eliminar</button>
               </div>
             </div>
           </div>

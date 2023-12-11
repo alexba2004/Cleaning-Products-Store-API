@@ -2,7 +2,7 @@ extends ../layout/index
 
 block content
   div.py-10
-    h1.text-center.text-4xl.my-10.font-extrabold.text-customYellow
+    h1.text-center.text-4xl.my-10.font-extrabold.text-customColor
       | As
       span.font-normal.text-black
         |  Limpieza
@@ -23,35 +23,35 @@ block content
           //- Mostrar datos del usuario
           div
             label.block.text-sm.uppercase.text-gray-700.mb-3.font-bold(for="name") Name:
-            input#name(class="inputStyle" placeholder="Full Name" name="name" type="text" value=user && user.name ? user.name : '')
+            input#name(class="w-full px-3 py-2 border-0 border-b-2 border-solid border-gray-400" placeholder="Full Name" name="name" type="text" value=user && user.name ? user.name : '')
 
           div
             label.block.text-sm.uppercase.text-gray-700.mb-3.font-bold(for="email") Email:
-            input#email(class="inputStyle" placeholder="user@domain.com" name="email" type="email" value=user && user.email ? user.email : '')
+            input#email(class="w-full px-3 py-2 border-0 border-b-2 border-solid border-gray-400" placeholder="user@domain.com" name="email" type="email" value=user && user.email ? user.email : '')
          
           div
             label.block.text-sm.uppercase.text-gray-700.mb-3.font-bold(for="email") Address:
-            input#address(class="inputStyle" placeholder="Address" name="address" type="text" value=user && user.address ? user.address : '')
+            input#address(class="w-full px-3 py-2 border-0 border-b-2 border-solid border-gray-400" placeholder="Address" name="address" type="text" value=user && user.address ? user.address : '')
 
           //- Botones para cambiar contraseña, guardar y eliminar usuario
           div.flex.items-center.justify-between.pt-5
             a#btn-change-password.text-sm.text-customYellow(href="/login/password-recovery" class="hover:underline decoration-4")
               | Change Password
 
-            input#btn-save-changes.mx-auto.text-sm.text-customYellow(type="submit" value="Save Changes" class="hover:underline decoration-4")
+            input#btn-save-changes.mx-auto.text-sm.text-green-500(type="submit" value="Save Changes" class="hover:underline decoration-4")
 
-            a#btn-delete-account.text-sm.text-red-800(href="/delete" class="hover:underline decoration-4")
+            a#btn-delete-account.text-sm.text-customColor(href="/delete" class="hover:underline decoration-4")
               | Delete Account
 
-      h2.text-center.text-2xl.my-6.font-semibold.text-customYellow Recent Purchases
+      h2.text-center.text-3xl.font-extrabold.text-white.mt-4 Recent Purchases
       if userPurchases.length > 0
-        .mt-4  
+        .mt-4 
           .bg-white.py-8.px-4.shadow-x1.rounded-lg.overflow-y-auto.max-h-96
             each purchase in userPurchases
               .mt-4
-                p.text-gray-700.font-semibold
+                p.text-green-500.font-semibold
                   | Price: $#{purchase.totalPayment}
-                p.text-gray-700
+                p.text-black.font-semibold
                 | Date: #{purchase.createdAt.toLocaleDateString()}
                 p.text-gray-700
                   | Description: #{purchase.description || 'N/A'}

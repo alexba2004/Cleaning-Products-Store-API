@@ -2,43 +2,43 @@ extends ../layout/index
 
 block content
   div.py-10
-    h1.text-center.text-4xl.my-10.font-extrabold.text-customYellow
+    h1.text-center.text-4xl.my-10.font-extrabold.text-white
       | Admin Dashboard
 
     div.text-center.mb-4
-      a(href="/logout" class="bg-customGreen3 py-2 px-4 rounded-lg hover:bg-customGreen4 inline-block") Logout
+      a.text-white.font-extrabold(href="/logout" class="bg-customGreen3 py-2 px-4 rounded-lg hover:bg-customGreen4 inline-block") Logout
 
     div.overflow-x-auto.overflow-y-auto.max-h-96
-      table.mx-auto.max-w-4xl.w-full.table-fixed.border-collapse.border.border-gray-800
+      table.mx-auto.max-h-96.w-96.table-fixed.border-collapse.border.border-gray-800
         thead
           tr
-            th.px-4.py-2.text-gray-800.bg-gray-200.font-semibold.sticky.top-0
+            th.px-4.py-2.text-white.bg-customGreen2.font-semibold.sticky.top-0
               | User
-            th.px-4.py-2.text-gray-800.bg-gray-200.font-semibold.sticky.top-0
+            th.px-4.py-2.text-white.bg-customGreen2.font-semibold.sticky.top-0
               | Email
-            th.px-2.py-2.text-gray-800.bg-gray-200.font-semibold.sticky.top-0
+            th.px-2.py-2.text-white.bg-customGreen2.font-semibold.sticky.top-0
               | Address
-            th.px-2.py-2.text-gray-800.bg-gray-200.font-semibold.sticky.top-0
+            th.px-2.py-2.text-white.bg-customGreen2.font-semibold.sticky.top-0
               | Total Purchases
-            th.px-4.py-2.text-gray-800.bg-gray-200.font-semibold.sticky.top-0
+            th.px-4.py-2.text-white.bg-customGreen2.font-semibold.sticky.top-0
               | Purchase Details
         tbody
           each user in usersWithPurchases
             if user.UserPurchases.length
               tr
-                td.px-4.py-2.border.text-gray-700
+                td.px-4.py-2.border.text-white.bg-customBlue12.text-center
                   | #{user.name}
 
-                td.px-4.py-2.border.text-gray-700
+                td.px-4.py-2.border.text-white.bg-customBlue12.text-center
                   | #{user.email}
 
-                td.px-4.py-2.border.text-gray-700
+                td.px-4.py-2.border.text-white.bg-customBlue12.text-center
                   | #{user.address}
 
-                td.px-4.py-2.border.text-gray-700
+                td.px-4.py-2.border.text-white.bg-customBlue12.text-center
                   | #{user.UserPurchases.length}
 
-                td.px-4.py-2.border.text-gray-700
+                td.px-4.py-2.border.text-white.bg-customBlue12
                   ul
                     each purchase in user.UserPurchases
                       li
@@ -48,8 +48,7 @@ block content
     /* Estilos CSS personalizados */
     .sticky {
       position: sticky;
-      top: 0;
-      background-color: #ffffff; /* Ajusta el color de fondo según tu diseño */
+      top: 0; /* Ajusta el color de fondo según tu diseño */
       z-index: 1;
     }
 
