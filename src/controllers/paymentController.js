@@ -71,7 +71,7 @@ export const createOrder = async (req, res) => {
       items,
       notification_url: "https://e720-190-237-16-208.sa.ngrok.io/webhook",
       back_urls: {
-        success: "http://localhost:3022/success",
+        success: `http://${process.env.SERVER_HOST}:${process.env.SERVER_PORT}/success`,
       },
     });
 
