@@ -40,8 +40,8 @@ block content
             a#btn-delete-account.text-sm.text-customColor(href="/delete" class="hover:underline decoration-4")
               | Eliminar Cuenta
 
-      h2.text-center.text-3xl.font-extrabold.text-white.mt-4 Compras
       if userPurchases.length > 0
+        h2.text-center.text-3xl.font-extrabold.text-white.mt-4 Compras
         .mt-4 
           .bg-white.py-8.px-4.shadow-x1.rounded-lg.overflow-y-auto.max-h-96
             each purchase in userPurchases
@@ -51,7 +51,7 @@ block content
                 p.text-black.font-semibold
                 | Fecha: #{purchase.createdAt.toLocaleDateString()}
                 p.text-gray-700
-                  | Descripción: #{purchase.description || 'N/A'}
+                  | Descripción de la compra: #{purchase.description || 'N/A'}
                 
 
 
