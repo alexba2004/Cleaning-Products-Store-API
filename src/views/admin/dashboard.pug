@@ -6,26 +6,25 @@ block content
       | Admin Dashboard
 
     div.text-center.mb-4
-      a(href="/logout" class="bg-customGreen3 py-2 px-4 rounded-lg hover:bg-customGreen4 inline-block") Logout 
-    table.mx-auto.max-w-3xl.w-full.table-auto.border-collapse.border.border-gray-800
-      thead
-        tr
-          th.px-4.py-2.text-gray-800.bg-gray-200.font-semibold
-            | User
-          th.px-4.py-2.text-gray-800.bg-gray-200.font-semibold
-            | Email
-          th.px-4.py-2.text-gray-800.bg-gray-200.font-semibold
-            | Address
-          th.px-4.py-2.text-gray-800.bg-gray-200.font-semibold
-            | Total Purchases
-          th.px-4.py-2.text-gray-800.bg-gray-200.font-semibold
-            | Purchase Details
-    //- Tabla para mostrar usuarios con compras
-    div.overflow-y-auto.max-h-96 
-      table.mx-auto.max-w-3xl.w-full.table-auto.border-collapse.border.border-gray-800
+      a(href="/logout" class="bg-customGreen3 py-2 px-4 rounded-lg hover:bg-customGreen4 inline-block") Logout
+
+    div.overflow-x-auto.overflow-y-auto.max-h-96
+      table.mx-auto.max-w-4xl.w-full.table-fixed.border-collapse.border.border-gray-800
+        thead
+          tr
+            th.px-4.py-2.text-gray-800.bg-gray-200.font-semibold.sticky.top-0
+              | User
+            th.px-4.py-2.text-gray-800.bg-gray-200.font-semibold.sticky.top-0
+              | Email
+            th.px-2.py-2.text-gray-800.bg-gray-200.font-semibold.sticky.top-0
+              | Address
+            th.px-2.py-2.text-gray-800.bg-gray-200.font-semibold.sticky.top-0
+              | Total Purchases
+            th.px-4.py-2.text-gray-800.bg-gray-200.font-semibold.sticky.top-0
+              | Purchase Details
         tbody
           each user in usersWithPurchases
-            if user.UserPurchases.length 
+            if user.UserPurchases.length
               tr
                 td.px-4.py-2.border.text-gray-700
                   | #{user.name}
@@ -40,8 +39,21 @@ block content
                   | #{user.UserPurchases.length}
 
                 td.px-4.py-2.border.text-gray-700
-                  //- Lista para mostrar las compras del usuario
                   ul
                     each purchase in user.UserPurchases
                       li
                         | Total Payment: #{purchase.totalPayment}, Description: #{purchase.description || 'N/A'}, Purchase Date: #{purchase.createdAt ? purchase.createdAt.toLocaleDateString() : 'N/A'}
+
+  style.
+    /* Estilos CSS personalizados */
+    .sticky {
+      position: sticky;
+      top: 0;
+      background-color: #ffffff; /* Ajusta el color de fondo según tu diseño */
+      z-index: 1;
+    }
+
+    /* Asegurar el desplazamiento vertical */
+    .overflow-y-auto {
+      display: block;
+    }
