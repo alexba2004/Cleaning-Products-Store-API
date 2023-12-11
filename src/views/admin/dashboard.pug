@@ -6,22 +6,22 @@ block content
       | Admin Dashboard
 
     div.text-center.mb-4
-      a.text-white.font-extrabold(href="/logout" class="bg-customGreen3 py-2 px-4 rounded-lg hover:bg-customGreen4 inline-block") Logout
+      a.text-white.font-extrabold(href="/logout" class="bg-customGreen3 py-2 px-4 rounded-lg hover:bg-customGreen4 inline-block") Cerrar Sesión
 
     div.overflow-x-auto.overflow-y-auto.max-h-96
       table.mx-auto.max-h-96.w-full.table-fixed.border-collapse.border.border-gray-800
         thead
           tr
             th.px-4.py-2.text-white.bg-customGreen2.font-semibold.sticky.top-0
-              | User
+              | USUARIO
             th.px-4.py-2.text-white.bg-customGreen2.font-semibold.sticky.top-0
-              | Email
+              | CORREO
             th.px-2.py-2.text-white.bg-customGreen2.font-semibold.sticky.top-0
-              | Address
+              | DIRECCIÓN
             th.px-2.py-2.text-white.bg-customGreen2.font-semibold.sticky.top-0
-              | Total Purchases
+              | TOTAL DE COMPRAS
             th.px-4.py-2.text-white.bg-customGreen2.font-semibold.sticky.top-0
-              | Purchase Details
+              | DETALLES DE LAS COMPRAS
         tbody
           each user in usersWithPurchases
             if user.UserPurchases.length
@@ -42,13 +42,13 @@ block content
                   ul
                     each purchase in user.UserPurchases
                       li
-                        | Total Payment: #{purchase.totalPayment}, Description: #{purchase.description || 'N/A'}, Purchase Date: #{purchase.createdAt ? purchase.createdAt.toLocaleDateString() : 'N/A'}
+                        | Total Pagado: #{purchase.totalPayment}, Descripción: #{purchase.description || 'N/A'}, Fecha: #{purchase.createdAt ? purchase.createdAt.toLocaleDateString() : 'N/A'}
 
   style.
     /* Estilos CSS personalizados */
     .sticky {
       position: sticky;
-      top: 0; /* Ajusta el color de fondo según tu diseño */
+      top: 0; 
       z-index: 1;
     }
 

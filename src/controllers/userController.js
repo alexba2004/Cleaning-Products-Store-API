@@ -6,6 +6,8 @@ import { generateToken, generateJwt } from "../lib/tokens.js";
 import bcrypt from "bcrypt";
 import jsonWebToken from "jsonwebtoken";
 import { emailRegister, emailPasswordRecovery } from "../lib/emails.js";
+import { Sequelize } from "sequelize";
+import { Op } from "sequelize";
 
 const formLogin = (request, response) => {
   response.render("../views/auth/login.pug", {
@@ -20,28 +22,28 @@ const formPasswordUpdate = async (request, response) => {
   console.log(user);
   if (!user) {
     response.render("auth/confirm-account", {
-      page: "Password Recovery",
+      page: "Cambiar Contraseña",
       error: true,
-      msg: "We have found some issues and could not verify your account.",
+      msg: "Encontramos algunos problemas y no pudimos verificar su cuenta.",
       button: "Access denied",
     });
   }
 
   response.render("auth/password-update", {
     isLogged: false,
-    page: "Password Update",
+    page: "Actualizar Contraseña",
   });
 };
 
 const formRegister = (request, response) => {
   response.render("auth/register.pug", {
-    page: "Creating a new account...",
+    page: "Nueva Cuenta",
   });
 };
 
 const formPasswordRecovery = (request, response) => {
   response.render("auth/recovery.pug", {
-    page: "Password Recovery",
+    page: "Cambiar Contraseña",
   });
 };
 
@@ -68,8 +70,8 @@ const insertUser = async (req, res) => {
 
   if (userExists) {
     res.render("auth/register.pug", {
-      page: "New Account",
-      errors: [{ msg: `the user ${req.body.email} already exist` }],
+      page: "Nueva Cuenta",
+      errors: [{ msg: `El ${req.body.email} ya existe` }],
       user: {
         name: req.body.name,
         email: req.body.email,
@@ -87,7 +89,7 @@ const insertUser = async (req, res) => {
       token,
     });
     res.render("templates/message.pug", {
-      page: "Account Created Successfully!",
+      page: "¡Cuenta Creada Exitosamente!",
       message: email,
       type: "success",
     });
@@ -95,7 +97,7 @@ const insertUser = async (req, res) => {
     emailRegister({ email, name, token });
   } else {
     res.render("auth/register.pug", {
-      page: "New Account",
+      page: "Nueva Cuenta",
       errors: resultValidate.array(),
       user: {
         name: req.body.name,
@@ -116,9 +118,9 @@ const confirmAccount = async (req, res) => {
   if (!userOwner) {
     console.log("El token no existe");
     res.render("auth/confirm-account", {
-      page: "Status Verification.",
+      page: "Verificacion de Estatus",
       error: true,
-      msg: "We have found some issues and could not verify your account.",
+      msg: "Encontramos algunos problemas y no pudimos verificar su cuenta.",
       button: "Access denied",
     });
   } else {
@@ -128,9 +130,9 @@ const confirmAccount = async (req, res) => {
     await userOwner.save();
     // Update de la BD
     res.render("auth/confirm-account", {
-      page: "Status Verification.",
+      page: "Verificacion de Estatus",
       error: false,
-      msg: "Your account has been confirmed successfuly.",
+      msg: "Su cuenta ha sido verificada exitosamente.",
       button: "Now you can login",
     });
   }
@@ -152,13 +154,13 @@ const updatePassword = async (req, res) => {
     user.token = null;
     await user.save();
     res.render("auth/confirm-account.pug", {
-      page: "Password Recovery",
-      button: "Back to login",
-      msg: "The password has been change succesfully",
+      page: "Cambiar Contraseña",
+      button: "Login",
+      msg: "La contraseña ha sido cambiada exitosamente.",
     });
   } else {
     res.render("auth/password-update.pug", {
-      page: "New Account",
+      page: "Nueva Cuenta",
       errors: resultValidate.array(),
     });
   }
@@ -181,7 +183,7 @@ const emailChangePassword = async (req, res) => {
       //Si no existe
       console.log(`El usuario: ${email} que esta intentando recuperar su contraseña no existe`);
       res.render("templates/message.pug", {
-        page: "User Not Found",
+        page: "Usuario No Encontrado",
         part1: `The user associated with: `,
         part2: ` does not exist in database.`,
         message: `${email}`,
@@ -196,16 +198,16 @@ const emailChangePassword = async (req, res) => {
       emailPasswordRecovery({ name: userExists.name, email: userExists.email, token: userExists.token });
 
       res.render("templates/message", {
-        page: "Email Send",
+        page: "Correo Enviado",
         message: `${email}`,
         type: "success",
       });
     }
   } else {
     res.render("auth/recovery", {
-      page: "Status Verification.",
+      page: "Verificacion de Estatus",
       error: false,
-      msg: "Your account has been confirmed successfuly.",
+      msg: "Su cuenta ha sido confirmada exitosamente.",
       button: "Now you can login",
       errors: resultValidate.array(),
       user: {
@@ -233,7 +235,7 @@ const authenticateUser = async (request, response) => {
       console.log("El ususario no existe");
       response.render("auth/login.pug", {
         page: "Login",
-        errors: [{ msg: `The user associated to: ${email} was not found` }],
+        errors: [{ msg: `El usuario asociado a: ${email} no fue encontrado.` }],
         user: {
           email,
         },
@@ -245,7 +247,7 @@ const authenticateUser = async (request, response) => {
 
         response.render("auth/login.pug", {
           page: "Login",
-          errors: [{ msg: `The user associated to: ${email} was found but not verified` }],
+          errors: [{ msg: `El usuario asociado a: ${email} fue encontrado pero no está verificado.` }],
           user: {
             email,
           },
@@ -254,7 +256,7 @@ const authenticateUser = async (request, response) => {
         if (!userExists.verifyPassword(password)) {
           response.render("auth/login.pug", {
             page: "Login",
-            errors: [{ msg: `User and password does not match` }],
+            errors: [{ msg: `El usuario y la contraseña no coinciden.` }],
             user: {
               email,
             },
@@ -297,7 +299,7 @@ const userHome = async (req, res) => {
   console.log(token);
   res.render("products/shopping-cart", {
     showHeader: true,
-    page: "Shopping-cart",
+    page: "Carrito",
     loggedUser,
   });
 };
@@ -319,7 +321,7 @@ const renderUserProfile = async (req, res) => {
 
     // Renderiza la página de perfil con la información del usuario y sus compras
     res.render("auth/edit", {
-      page: "Profile",
+      page: "Perfil",
       showHeader: true,
       showFooter: true,
       user,
@@ -337,18 +339,59 @@ const updateUserProfile = async (req, res) => {
     const token = req.cookies._token;
     const decoded = jsonWebToken.verify(token, process.env.JWT_SECRET_HASH_STRING);
     const loggedUser = await User.findByPk(decoded.userID);
-
     // Obtén el ID del usuario desde la sesión
     const userId = loggedUser.id;
+    // Busca las compras del usuario en la base de datos
+    const userPurchases = await UserPurchase.findAll({ where: { UserId: userId } });
 
+    const { name, address, email } = req.body;
     // Obtén los datos del formulario
-    const { name, email, address } = req.body;
+    await check("name").notEmpty().withMessage("YOUR NAME IS REQUIRED").run(req); //* Express checa el nombre que no venga vacio AHORA MISMO
+    await check("email").notEmpty().withMessage("YOUR EMAIL IS REQUIRED").isEmail().withMessage("THIS ISN'T EMAIL FORMAT").run(req);
+    await check("address").notEmpty().withMessage("YOUR ADDRESS IS REQUIRED").run(req);
 
-    // Actualiza los datos del usuario en la base de datos
-    await User.update({ name, email, address }, { where: { id: userId } });
+    console.log(`El total de errores fueron de: ${validationResult.length} errores de validación`);
 
-    // Redirige a la página de perfil con un mensaje de éxito
-    res.redirect("/profile?successMsg=Profile updated successfully");
+    let resultValidate = validationResult(req);
+    const userExists = await User.findOne({
+      where: {
+        email: req.body.email,
+        id: { [Op.not]: userId },
+      },
+    });
+
+    if (userExists) {
+      res.render("auth/edit.pug", {
+        page: "Perfil",
+        showHeader: true,
+        showFooter: true,
+        userPurchases,
+        errors: [{ msg: `El ${req.body.email} ya existe` }],
+        user: {
+          name: req.body.name,
+          email: req.body.email,
+          address: req.body.address,
+        },
+      });
+    } else if (resultValidate.isEmpty()) {
+      // Actualiza los datos del usuario en la base de datos
+      await User.update({ name, email, address }, { where: { id: userId } });
+      // Redirige a la página de perfil con un mensaje de éxito
+      res.redirect("/profile?successMsg=Profile updated successfully");
+    } else {
+      res.render("auth/edit.pug", {
+        page: "Perfil",
+        showHeader: true,
+        showFooter: true,
+        userPurchases,
+        errors: resultValidate.array(),
+        user: {
+          name: req.body.name,
+          email: req.body.email,
+          address: req.body.address,
+        },
+      });
+    }
   } catch (error) {
     console.error("Error al actualizar el perfil del usuario:", error);
     res.redirect("/profile?errorMsg=Error updating profile");
