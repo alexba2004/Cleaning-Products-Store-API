@@ -1,6 +1,6 @@
 # Cleaning Products Store API - El As de la Limpieza
 
-Welcome to "Cleaning Products Store API," the repository for the Bulk Cleaning Products Store named "El As de la Limpieza"!
+Welcome to "Cleaning Products Store API", the repository for the Bulk Cleaning Products Store named "El As de la Limpieza"!
 
 This project is dedicated to simplifying and enhancing the shopping experience for our cleaning products store. The API, built using NodeJS, PUG, and Tailwind under an MVC model, is designed to efficiently manage and showcase our diverse range of cleaning products available for purchase in bulk.
  
