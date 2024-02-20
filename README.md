@@ -60,7 +60,7 @@ Ensure the following dependencies are installed before running the application:
 
 ## Installation Instructions
 
-1. Clone this repository: `git clone https://github.com/yourusername/Cleaning-Products-Store-API.git`
+1. Clone this repository: `git clone https://github.com/alexba2004/Cleaning-Products-Store-API.git`
 2. Install dependencies: `npm install`
 3. Configure your environment variables in a `.env` file.
 4. Run the application: `npm start`
